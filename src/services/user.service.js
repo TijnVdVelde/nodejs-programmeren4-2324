@@ -48,7 +48,21 @@ const userService = {
                 });
             }
         });
+    },
+
+    // Add to userService
+    delete: (id, callback) => {
+        logger.info(`delete user with id ${id}`);
+        database.delete(id, (err, result) => {
+            if (err) {
+                logger.error('error deleting user: ', err.message || 'unknown error');
+                callback(err, null);
+            } else {
+                callback(null, result);
+            }
+        });
     }
+
 };
 
 module.exports = userService;

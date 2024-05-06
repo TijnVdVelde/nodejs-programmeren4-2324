@@ -63,7 +63,28 @@ let userController = {
                 });
             }
         });
-    }    
+    },
+    
+    // Add to your userController
+    delete: (req, res, next) => {
+        const userId = parseInt(req.params.userId, 10);
+        logger.trace('delete user', userId);
+        userService.delete(userId, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status || 500,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            res.status(200).json({
+                status: 200,
+                message: success.message,
+                data: {}
+            });
+        });
+    }
+
 
     // Todo: Implement the update and delete methods
 }
