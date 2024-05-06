@@ -1,4 +1,5 @@
 const userService = require('../services/user.service')
+console.log(userService);
 const logger = require('../util/logger')
 
 let userController = {
@@ -44,25 +45,25 @@ let userController = {
     },
 
     getById: (req, res, next) => {
-        const userId = req.params.userId
-        logger.trace('userController: getById', userId)
+        const userId = parseInt(req.params.userId, 10); // Zet de userId om van string naar integer
+        logger.trace('userController: getById', userId);
         userService.getById(userId, (error, success) => {
             if (error) {
                 return next({
                     status: error.status,
                     message: error.message,
                     data: {}
-                })
+                });
             }
             if (success) {
                 res.status(200).json({
                     status: success.status,
                     message: success.message,
                     data: success.data
-                })
+                });
             }
-        })
-    }
+        });
+    }    
 
     // Todo: Implement the update and delete methods
 }
