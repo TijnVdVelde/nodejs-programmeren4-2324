@@ -61,7 +61,24 @@ const userService = {
                 callback(null, result);
             }
         });
+    },
+
+    update: (id, user, callback) => {
+        logger.info(`update user with id ${id}`, user);
+        database.update(id, user, (err, data) => {
+            if (err) {
+                logger.error('error updating user: ', err.message || 'unknown error');
+                callback(err, null);
+            } else {
+                logger.trace(`User updated with id ${id}.`);
+                callback(null, {
+                    message: `User updated successfully.`,
+                    data: data
+                });
+            }
+        });
     }
+    
 
 };
 

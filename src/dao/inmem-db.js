@@ -41,6 +41,17 @@ const database = {
         }, this._delayTime);
     },
 
+    update(id, updatedItem, callback) {
+        setTimeout(() => {
+            const index = this._data.findIndex(item => item.id === id);
+            if (index === -1) {
+                callback({ message: `Error: id ${id} does not exist!` }, null);
+            } else {
+                this._data[index] = { ...this._data[index], ...updatedItem };
+                callback(null, this._data[index]);
+            }
+        }, this._delayTime);
+    },
 
     delete(id, callback) {
         setTimeout(() => {
