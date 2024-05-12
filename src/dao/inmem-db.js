@@ -4,13 +4,23 @@ const database = {
             id: 0,
             firstName: 'Hendrik',
             lastName: 'van Dam',
-            emailAdress: 'hvd@server.nl'
+            street: 'Kerkstraat 1',
+            city: 'Utrecht',
+            isActive: true,
+            emailAdress: 'hvd@server.nl',
+            password: 'secret',
+            phoneNumber: '06-12345678'
         },
         {
             id: 1,
             firstName: 'Marieke',
             lastName: 'Jansen',
-            emailAdress: 'm@server.nl'
+            street: 'Schipweg 10',
+            city: 'Amsterdam',
+            isActive: true,
+            emailAdress: 'm@server.nl',
+            password: 'secret',
+            phoneNumber: '06-87654321'
         }
     ],
     _index: 2,
