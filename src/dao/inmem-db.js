@@ -1,3 +1,5 @@
+const logger = require('../util/logger');
+
 const database = {
     _data: [
         {
@@ -41,7 +43,7 @@ const database = {
                 callback({ message: `Error: id ${id} does not exist!` }, null);
             }
         }, this._delayTime);
-    },    
+    },
 
     add(item, callback) {
         setTimeout(() => {
@@ -74,6 +76,6 @@ const database = {
             }
         }, this._delayTime);
     }
-}
+};
 
 module.exports = database;
