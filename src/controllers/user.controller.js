@@ -45,6 +45,13 @@ let userController = {
 
     getById: (req, res, next) => {
         const userId = parseInt(req.params.userId, 10); // Convert the userId from string to integer
+        if (isNaN(userId)) {
+            return next({
+                status: 400,
+                message: "Invalid user ID",
+                data: {}
+            });
+        }
         logger.trace('userController: getById', userId);
         userService.getById(userId, (error, success) => {
             if (error) {
@@ -66,6 +73,13 @@ let userController = {
     
     delete: (req, res, next) => {
         const userId = parseInt(req.params.userId, 10);
+        if (isNaN(userId)) {
+            return next({
+                status: 400,
+                message: "Invalid user ID",
+                data: {}
+            });
+        }
         logger.trace('delete user', userId);
         userService.delete(userId, (error, success) => {
             if (error) {
@@ -85,6 +99,13 @@ let userController = {
 
     update: (req, res, next) => {
         const userId = parseInt(req.params.userId, 10);
+        if (isNaN(userId)) {
+            return next({
+                status: 400,
+                message: "Invalid user ID",
+                data: {}
+            });
+        }
         const userData = req.body;
         logger.trace('update user', userId);
         userService.update(userId, userData, (error, success) => {
@@ -116,6 +137,38 @@ let userController = {
                 });
             }
             if (success) {
+                res.status(200).json({
+                    status: 200,
+                    message: success.message,
+                    data: success.data
+                });
+            }
+        });
+    },
+
+    getProfile: (req, res, next) => {
+        const userId = req.userId; // This is set by the authentication middleware
+        logger.info('Fetching profile for user ID:', userId);
+        if (!userId || isNaN(userId)) {
+            logger.error('Invalid user ID:', userId);
+            return next({
+                status: 400,
+                message: "Invalid user ID",
+                data: {}
+            });
+        }
+        logger.trace('userController: getProfile', userId);
+        userService.getById(userId, (error, success) => {
+            if (error) {
+                logger.error('Error getting profile for user ID:', userId, error.message);
+                return next({
+                    status: error.status || 500,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                logger.info('Profile data retrieved:', success.data);
                 res.status(200).json({
                     status: 200,
                     message: success.message,

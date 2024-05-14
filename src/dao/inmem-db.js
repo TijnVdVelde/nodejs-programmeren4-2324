@@ -40,7 +40,9 @@ const database = {
             if (item) {
                 callback(null, item);
             } else {
-                callback({ message: `Error: id ${id} does not exist!` }, null);
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
             }
         }, this._delayTime);
     },
@@ -57,7 +59,9 @@ const database = {
         setTimeout(() => {
             const index = this._data.findIndex(item => item.id === id);
             if (index === -1) {
-                callback({ message: `Error: id ${id} does not exist!` }, null);
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
             } else {
                 this._data[index] = { ...this._data[index], ...updatedItem };
                 callback(null, this._data[index]);
@@ -69,7 +73,9 @@ const database = {
         setTimeout(() => {
             const index = this._data.findIndex(item => item.id === id);
             if (index === -1) {
-                callback({ message: `Error: id ${id} does not exist!` }, null);
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
             } else {
                 this._data.splice(index, 1);
                 callback(null, { message: `User with id ${id} deleted successfully.` });

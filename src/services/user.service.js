@@ -34,17 +34,26 @@ const userService = {
 
     getById: (id, callback) => {
         logger.info(`getById with id ${id}`);
+        if (isNaN(id)) {
+            const errMsg = `Error: id ${id} is not a valid number!`;
+            logger.error(errMsg);
+            callback({ status: 400, message: errMsg }, null);
+            return;
+        }
         database.getById(id, (err, data) => {
             if (err) {
                 logger.error('error getting user: ', err.message || 'unknown error');
                 callback(err, null);
             } else if (!data) {
-                logger.info(`User not found with id ${id}`);
-                callback(new Error('User not found'), null);
+                const errMsg = `User not found with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 404, message: errMsg }, null);
             } else {
+                // Assuming meals are stored in a different way, adjust as necessary
+                const meals = database._data.filter(meal => meal.cookId === id && new Date(meal.date) >= new Date());
                 callback(null, {
                     message: `User found with id ${id}.`,
-                    data: data
+                    data: { user: data, meals }
                 });
             }
         });
@@ -52,6 +61,12 @@ const userService = {
 
     delete: (id, callback) => {
         logger.info(`delete user with id ${id}`);
+        if (isNaN(id)) {
+            const errMsg = `Error: id ${id} is not a valid number!`;
+            logger.error(errMsg);
+            callback({ status: 400, message: errMsg }, null);
+            return;
+        }
         database.delete(id, (err, result) => {
             if (err) {
                 logger.error('error deleting user: ', err.message || 'unknown error');
@@ -64,6 +79,12 @@ const userService = {
 
     update: (id, user, callback) => {
         logger.info(`update user with id ${id}`, user);
+        if (isNaN(id)) {
+            const errMsg = `Error: id ${id} is not a valid number!`;
+            logger.error(errMsg);
+            callback({ status: 400, message: errMsg }, null);
+            return;
+        }
         database.update(id, user, (err, data) => {
             if (err) {
                 logger.error('error updating user: ', err.message || 'unknown error');
@@ -79,19 +100,22 @@ const userService = {
     },
 
     login: (email, password, callback) => {
-        logger.info('attempting login for', email);
+        logger.info('Attempting login for', email);
         const user = database._data.find(user => user.emailAdress === email);
-    
+
         if (!user) {
+            logger.warn('User not found:', email);
             callback({ status: 404, message: 'User not found' }, null);
         } else if (user.password !== password) {
+            logger.warn('Incorrect password for user:', email);
             callback({ status: 401, message: 'Incorrect password' }, null);
         } else {
-            // Simulate token generation - in a real scenario, use JWT or similar
-            const token = 'token-' + new Date().getTime();
+            const token = new Date().getTime().toString();
+            user.token = token;
+            logger.info('Login successful for', email, 'with token', token);
             callback(null, {
                 message: 'Login successful',
-                data: { 
+                data: {
                     user: {
                         id: user.id,
                         firstName: user.firstName,
