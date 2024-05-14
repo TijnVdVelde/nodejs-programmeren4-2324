@@ -38,6 +38,26 @@ const mealService = {
         });
     },
 
+    getById: (id, callback) => {
+        logger.info(`get meal by id ${id}`);
+        database.getMealById(id, (err, data) => {
+            if (err) {
+                logger.error('error getting meal: ', err.message || 'unknown error');
+                callback(err, null);
+            } else if (!data) {
+                const errMsg = `Meal not found with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+            } else {
+                callback(null, {
+                    status: 200,
+                    message: `Meal found with id ${id}.`,
+                    data: data
+                });
+            }
+        });
+    },
+
     update: (id, meal, userId, callback) => {
         logger.info(`update meal with id ${id}`, meal);
 

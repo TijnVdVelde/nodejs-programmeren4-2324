@@ -45,6 +45,37 @@ let mealController = {
         });
     },
 
+    getById: (req, res, next) => {
+        const mealId = parseInt(req.params.mealId, 10);
+
+        if (isNaN(mealId)) {
+            return next({
+                status: 400,
+                message: "Invalid meal ID",
+                data: {}
+            });
+        }
+
+        logger.info(`get meal by id ${mealId}`);
+
+        mealService.getById(mealId, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                });
+            }
+        });
+    },
+
     update: (req, res, next) => {
         const mealId = parseInt(req.params.mealId, 10);
         const userId = req.userId;
