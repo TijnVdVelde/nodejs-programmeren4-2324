@@ -46,7 +46,7 @@ const database = {
             if (item) {
                 callback(null, item);
             } else {
-                const errMsg = `Error: id ${id} does not exist!`;
+                const errMsg = `User not found with id ${id}`;
                 logger.error(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             }

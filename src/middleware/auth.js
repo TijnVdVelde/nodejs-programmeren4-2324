@@ -1,5 +1,5 @@
-const logger = require('../util/logger');
 const database = require('../dao/inmem-db');
+const logger = require('../util/logger');
 
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];

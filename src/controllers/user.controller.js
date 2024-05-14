@@ -64,7 +64,7 @@ let userController = {
             }
             if (success) {
                 res.status(200).json({
-                    status: success.status,
+                    status: 200,
                     message: success.message,
                     data: success.data
                 });
@@ -99,28 +99,44 @@ let userController = {
     },
 
     update: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10);
-        if (isNaN(userId)) {
-            return next({
-                status: 400,
-                message: "Invalid user ID",
-                data: {}
-            });
-        }
-        const userData = req.body;
-        logger.trace('update user', userId);
-        userService.update(userId, userData, (error, success) => {
-            if (error) {
+        const userId = parseInt(req.params.userId, 10); // Fix parameter name to match the route
+        const updatedData = req.body;
+        const tokenUserId = req.userId;
+
+        // Check if user exists
+        userService.getById(userId, (err, result) => {
+            if (err) {
                 return next({
-                    status: error.status || 500,
-                    message: error.message,
+                    status: 404,
+                    message: `User not found with id ${userId}`,
                     data: {}
                 });
             }
-            res.status(200).json({
-                status: 200,
-                message: success.message,
-                data: success.data
+
+            // Check if the user making the request is the owner of the data
+            if (userId !== tokenUserId) {
+                return res.status(403).json({
+                    status: 403,
+                    message: 'You are not authorized to update this user',
+                    data: {}
+                });
+            }
+
+            userService.update(userId, updatedData, (error, success) => {
+                if (error) {
+                    return next({
+                        status: error.status,
+                        message: error.message,
+                        data: {}
+                    });
+                }
+                if (success) {
+                    res.status(200).json({
+                        status: success.status,
+                        message: success.message,
+                        data: success.data
+                    });
+                }
             });
         });
     },

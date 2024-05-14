@@ -79,11 +79,11 @@ const userService = {
                 logger.info(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             } else {
-                const meals = database._data.meals.filter(meal => meal.cook.id === id && new Date(meal.dateTime) >= new Date());
+                const futureMeals = database._data.meals.filter(meal => meal.cook.id === id && new Date(meal.dateTime) >= new Date());
                 callback(null, {
                     status: 200,
                     message: `User found with id ${id}.`,
-                    data: { user: data, meals }
+                    data: { user: data, meals: futureMeals }
                 });
             }
         });
@@ -110,37 +110,31 @@ const userService = {
         });
     },
 
-    update: (id, user, callback) => {
-        logger.info(`update user with id ${id}`, user);
-        if (isNaN(id)) {
-            const errMsg = `Error: id ${id} is not a valid number!`;
-            logger.error(errMsg);
-            callback({ status: 400, message: errMsg }, null);
-            return;
-        }
-        
-        const existingUser = database._data.users.find(u => u.emailAdress === user.emailAdress && u.id !== id);
-        if (existingUser) {
-            const errMsg = `Email address ${user.emailAdress} already exists.`;
-            logger.error(errMsg);
-            callback({ status: 400, message: errMsg }, null);
-            return;
-        }
-        
-        database.updateUser(id, user, (err, data) => {
-            if (err) {
-                logger.error('error updating user: ', err.message || 'unknown error');
-                callback(err, null);
-            } else {
-                logger.trace(`User updated with id ${id}.`);
-                callback(null, {
-                    status: 200,
-                    message: `User updated successfully.`,
-                    data: data
-                });
+    update: (userId, updatedData, callback) => {
+        database.getUserById(userId, (err, user) => {
+            if (err || !user) {
+                return callback({ status: 404, message: `User not found with id ${userId}` }, null);
             }
+
+            // Validate the updated data (e.g., email should be unique)
+            if (updatedData.emailAdress) {
+                const existingUser = database._data.users.find(user => user.emailAdress === updatedData.emailAdress && user.id !== userId);
+                if (existingUser) {
+                    return callback({ status: 400, message: 'Email address already in use' }, null);
+                }
+            }
+
+            // Perform the update
+            Object.assign(user, updatedData);
+            database.updateUser(userId, user, (err, updatedUser) => {
+                if (err) {
+                    return callback(err, null);
+                }
+                callback(null, { status: 200, message: 'User updated successfully', data: updatedUser });
+            });
         });
     },
+
 
     login: (email, password, callback) => {
         logger.info('Attempting login for', email);

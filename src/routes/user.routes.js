@@ -41,9 +41,9 @@ const validateLogin = (req, res, next) => {
 router.post('/api/login', validateLogin, userController.login);
 router.post('/api/user', validateUserCreateChaiExpect, userController.create);
 router.get('/api/user', authenticateToken, userController.getAll);
-router.get('/api/user/:userId', userController.getById);
+router.get('/api/user/profile', authenticateToken, userController.getProfile);
+router.get('/api/user/:userId', authenticateToken, userController.getById);
 router.delete('/api/user/:userId', authenticateToken, userController.delete);
 router.put('/api/user/:userId', authenticateToken, validateUserCreateChaiExpect, userController.update);
-router.get('/api/user/profile', authenticateToken, userController.getProfile);
 
 module.exports = router;
