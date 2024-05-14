@@ -73,27 +73,44 @@ let userController = {
     },
     
     delete: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10);
-        if (isNaN(userId)) {
-            return next({
-                status: 400,
-                message: "Invalid user ID",
+        const userId = parseInt(req.params.userId, 10); // Convert the userId from string to integer
+        const tokenUserId = req.userId;
+
+        // Check if the user making the request is the owner of the data
+        if (userId !== tokenUserId) {
+            return res.status(403).json({
+                status: 403,
+                message: 'Forbidden',
                 data: {}
             });
         }
-        logger.trace('delete user', userId);
-        userService.delete(userId, (error, success) => {
+
+        // Now, check if the user exists
+        userService.getById(userId, (error, success) => {
             if (error) {
                 return next({
-                    status: error.status || 500,
+                    status: error.status,
                     message: error.message,
                     data: {}
                 });
             }
-            res.status(200).json({
-                status: 200,
-                message: success.message,
-                data: {}
+
+            // Proceed to delete the user
+            userService.delete(userId, (error, success) => {
+                if (error) {
+                    return next({
+                        status: error.status,
+                        message: error.message,
+                        data: {}
+                    });
+                }
+                if (success) {
+                    res.status(200).json({
+                        status: success.status,
+                        message: success.message,
+                        data: success.data
+                    });
+                }
             });
         });
     },
