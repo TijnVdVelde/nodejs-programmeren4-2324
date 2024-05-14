@@ -97,24 +97,14 @@ const userService = {
             callback({ status: 400, message: errMsg }, null);
             return;
         }
-
-        // Check if the user exists before trying to delete
-        database.getUserById(id, (err, user) => {
-            if (err || !user) {
-                const errMsg = `User not found with id ${id}`;
-                logger.info(errMsg);
-                callback({ status: 404, message: errMsg }, null);
+        database.deleteUser(id, (err, result) => {
+            if (err) {
+                logger.error('error deleting user: ', err.message || 'unknown error');
+                callback(err, null);
             } else {
-                database.deleteUser(id, (err, result) => {
-                    if (err) {
-                        logger.error('error deleting user: ', err.message || 'unknown error');
-                        callback(err, null);
-                    } else {
-                        callback(null, {
-                            status: 200,
-                            message: 'User deleted successfully'
-                        });
-                    }
+                callback(null, {
+                    status: 200,
+                    message: result.message
                 });
             }
         });
