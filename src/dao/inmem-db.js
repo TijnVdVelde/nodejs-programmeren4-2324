@@ -95,11 +95,38 @@ const database = {
         }, this._delayTime);
     },
 
+    getMealById(id, callback) {
+        setTimeout(() => {
+            const item = this._data.meals.find(meal => meal.id === id);
+            if (item) {
+                callback(null, item);
+            } else {
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+            }
+        }, this._delayTime);
+    },
+
     addMeal(meal, callback) {
         setTimeout(() => {
             meal.id = this._mealIndex++;
             this._data.meals.push(meal);
             callback(null, meal);
+        }, this._delayTime);
+    },
+
+    updateMeal(id, updatedItem, callback) {
+        setTimeout(() => {
+            const index = this._data.meals.findIndex(item => item.id === id);
+            if (index === -1) {
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+            } else {
+                this._data.meals[index] = { ...this._data.meals[index], ...updatedItem };
+                callback(null, this._data.meals[index]);
+            }
         }, this._delayTime);
     }
 };

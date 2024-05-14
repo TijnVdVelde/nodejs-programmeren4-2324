@@ -36,6 +36,46 @@ const mealService = {
                 });
             }
         });
+    },
+
+    update: (id, meal, userId, callback) => {
+        logger.info(`update meal with id ${id}`, meal);
+
+        database.getMealById(id, (err, existingMeal) => {
+            if (err) {
+                logger.error('error getting meal: ', err.message || 'unknown error');
+                callback(err, null);
+                return;
+            }
+
+            if (!existingMeal) {
+                const errMsg = `Meal not found with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+                return;
+            }
+
+            if (existingMeal.ownerId !== userId) {
+                const errMsg = `User not authorized to update meal with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 403, message: errMsg }, null);
+                return;
+            }
+
+            database.updateMeal(id, meal, (err, updatedMeal) => {
+                if (err) {
+                    logger.error('error updating meal: ', err.message || 'unknown error');
+                    callback(err, null);
+                } else {
+                    logger.trace(`Meal updated with id ${id}.`);
+                    callback(null, {
+                        status: 200,
+                        message: `Meal updated successfully.`,
+                        data: updatedMeal
+                    });
+                }
+            });
+        });
     }
 };
 
