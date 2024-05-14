@@ -149,33 +149,27 @@ let userController = {
 
     getProfile: (req, res, next) => {
         const userId = req.userId; // This is set by the authentication middleware
-        logger.info('Fetching profile for user ID:', userId);
+        logger.info(`Fetching profile for user ID: ${userId}`);
         if (!userId || isNaN(userId)) {
-            logger.error('Invalid user ID:', userId);
             return next({
                 status: 400,
                 message: "Invalid user ID",
                 data: {}
             });
         }
-        logger.trace('userController: getProfile', userId);
-        userService.getById(userId, (error, success) => {
+        userService.getProfile(userId, (error, success) => {
             if (error) {
-                logger.error('Error getting profile for user ID:', userId, error.message);
                 return next({
-                    status: error.status || 500,
+                    status: error.status,
                     message: error.message,
                     data: {}
                 });
             }
-            if (success) {
-                logger.info('Profile data retrieved:', success.data);
-                res.status(200).json({
-                    status: 200,
-                    message: success.message,
-                    data: success.data
-                });
-            }
+            res.status(200).json({
+                status: success.status,
+                message: success.message,
+                data: success.data
+            });
         });
     }
 };

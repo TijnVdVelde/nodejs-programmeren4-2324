@@ -170,6 +170,28 @@ const userService = {
                 }
             });
         }
+    },
+
+    getProfile: (userId, callback) => {
+        logger.info(`getProfile for user with id ${userId}`);
+        database.getUserById(userId, (err, user) => {
+            if (err) {
+                return callback(err, null);
+            }
+            if (!user) {
+                return callback({ status: 404, message: `User not found with id ${userId}` }, null);
+            }
+            // Assuming meals are stored in the database._data.meals
+            const futureMeals = database._data.meals.filter(meal => meal.cook.id === userId && new Date(meal.dateTime) >= new Date());
+            callback(null, {
+                status: 200,
+                message: `Profile retrieved successfully.`,
+                data: {
+                    user: user,
+                    meals: futureMeals
+                }
+            });
+        });
     }
 };
 
