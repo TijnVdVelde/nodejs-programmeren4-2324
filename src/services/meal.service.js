@@ -4,10 +4,17 @@ const logger = require('../util/logger');
 const mealService = {
     create: (meal, userId, callback) => {
         logger.info('create meal', meal);
-        
-        // Add the owner ID to the meal
-        meal.ownerId = userId;
-        
+
+        // Validate required fields
+        if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
+            const errMsg = 'Missing required fields';
+            logger.info(errMsg);
+            return callback({ status: 400, message: errMsg }, null);
+        }
+
+        // Assign the logged-in user as the owner of the meal
+        meal.cook = { id: userId };
+
         database.addMeal(meal, (err, data) => {
             if (err) {
                 logger.info('error creating meal: ', err.message || 'unknown error');
