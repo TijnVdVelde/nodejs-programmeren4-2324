@@ -4,6 +4,16 @@ const logger = require('../util/logger');
 const userService = {
     create: (user, callback) => {
         logger.info('create user', user);
+        
+        // Check if the email address already exists
+        const existingUser = database._data.find(u => u.emailAdress === user.emailAdress);
+        if (existingUser) {
+            const errMsg = `Email address ${user.emailAdress} already exists.`;
+            logger.error(errMsg);
+            callback({ status: 400, message: errMsg }, null);
+            return;
+        }
+        
         database.add(user, (err, data) => {
             if (err) {
                 logger.info('error creating user: ', err.message || 'unknown error');
@@ -11,6 +21,7 @@ const userService = {
             } else {
                 logger.trace(`User created with id ${data.id}.`);
                 callback(null, {
+                    status: 200,
                     message: `User created with id ${data.id}.`,
                     data: data
                 });
@@ -25,6 +36,7 @@ const userService = {
                 callback(err, null);
             } else {
                 callback(null, {
+                    status: 200,
                     message: `Found ${data.length} users.`,
                     data: data
                 });
@@ -52,6 +64,7 @@ const userService = {
                 // Assuming meals are stored in a different way, adjust as necessary
                 const meals = database._data.filter(meal => meal.cookId === id && new Date(meal.date) >= new Date());
                 callback(null, {
+                    status: 200,
                     message: `User found with id ${id}.`,
                     data: { user: data, meals }
                 });
@@ -72,7 +85,10 @@ const userService = {
                 logger.error('error deleting user: ', err.message || 'unknown error');
                 callback(err, null);
             } else {
-                callback(null, result);
+                callback(null, {
+                    status: 200,
+                    message: result.message
+                });
             }
         });
     },
@@ -92,6 +108,7 @@ const userService = {
             } else {
                 logger.trace(`User updated with id ${id}.`);
                 callback(null, {
+                    status: 200,
                     message: `User updated successfully.`,
                     data: data
                 });
@@ -114,6 +131,7 @@ const userService = {
             user.token = token;
             logger.info('Login successful for', email, 'with token', token);
             callback(null, {
+                status: 200,
                 message: 'Login successful',
                 data: {
                     user: {
@@ -127,7 +145,6 @@ const userService = {
             });
         }
     }
-    
 };
 
 module.exports = userService;
