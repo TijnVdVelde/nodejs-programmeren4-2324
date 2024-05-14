@@ -82,7 +82,7 @@ const mealService = {
                 return;
             }
 
-            if (existingMeal.ownerId !== userId) {
+            if (existingMeal.cook.id !== userId) {
                 const errMsg = `User not authorized to update meal with id ${id}`;
                 logger.info(errMsg);
                 callback({ status: 403, message: errMsg }, null);
@@ -122,7 +122,7 @@ const mealService = {
                 return;
             }
 
-            if (existingMeal.ownerId !== userId) {
+            if (existingMeal.cook.id !== userId) {
                 const errMsg = `User not authorized to delete meal with id ${id}`;
                 logger.info(errMsg);
                 callback({ status: 403, message: errMsg }, null);
