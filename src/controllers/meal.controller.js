@@ -107,6 +107,38 @@ let mealController = {
                 });
             }
         });
+    },
+
+    delete: (req, res, next) => {
+        const mealId = parseInt(req.params.mealId, 10);
+        const userId = req.userId;
+
+        logger.info(`delete meal with id ${mealId}`);
+
+        if (isNaN(mealId)) {
+            return next({
+                status: 400,
+                message: "Invalid meal ID",
+                data: {}
+            });
+        }
+
+        mealService.delete(mealId, userId, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                });
+            }
+            if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                });
+            }
+        });
     }
 };
 

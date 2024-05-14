@@ -96,6 +96,46 @@ const mealService = {
                 }
             });
         });
+    },
+
+    delete: (id, userId, callback) => {
+        logger.info(`delete meal with id ${id}`);
+
+        database.getMealById(id, (err, existingMeal) => {
+            if (err) {
+                logger.error('error getting meal: ', err.message || 'unknown error');
+                callback(err, null);
+                return;
+            }
+
+            if (!existingMeal) {
+                const errMsg = `Meal not found with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+                return;
+            }
+
+            if (existingMeal.ownerId !== userId) {
+                const errMsg = `User not authorized to delete meal with id ${id}`;
+                logger.info(errMsg);
+                callback({ status: 403, message: errMsg }, null);
+                return;
+            }
+
+            database.deleteMeal(id, (err, result) => {
+                if (err) {
+                    logger.error('error deleting meal: ', err.message || 'unknown error');
+                    callback(err, null);
+                } else {
+                    logger.trace(`Meal deleted with id ${id}.`);
+                    callback(null, {
+                        status: 200,
+                        message: `Meal deleted successfully.`,
+                        data: result
+                    });
+                }
+            });
+        });
     }
 };
 

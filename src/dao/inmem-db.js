@@ -128,6 +128,20 @@ const database = {
                 callback(null, this._data.meals[index]);
             }
         }, this._delayTime);
+    },
+
+    deleteMeal(id, callback) {
+        setTimeout(() => {
+            const index = this._data.meals.findIndex(item => item.id === id);
+            if (index === -1) {
+                const errMsg = `Error: id ${id} does not exist!`;
+                logger.error(errMsg);
+                callback({ status: 404, message: errMsg }, null);
+            } else {
+                this._data.meals.splice(index, 1);
+                callback(null, { message: `Meal with id ${id} deleted successfully.` });
+            }
+        }, this._delayTime);
     }
 };
 
