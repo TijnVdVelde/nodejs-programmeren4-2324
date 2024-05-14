@@ -106,6 +106,15 @@ let userController = {
                 data: {}
             });
         }
+
+        if (userId !== req.userId) {
+            return next({
+                status: 403,
+                message: "You are not authorized to update this user's data",
+                data: {}
+            });
+        }
+
         const userData = req.body;
         logger.trace('update user', userId);
         userService.update(userId, userData, (error, success) => {
@@ -177,7 +186,6 @@ let userController = {
             }
         });
     }
-    
 };
 
 module.exports = userController;

@@ -11,7 +11,8 @@ const database = {
             isActive: true,
             emailAdress: 'hvd@server.nl',
             password: 'secret',
-            phoneNumber: '06-12345678'
+            phoneNumber: '06-12345678',
+            token: null
         },
         {
             id: 1,
@@ -22,7 +23,8 @@ const database = {
             isActive: true,
             emailAdress: 'm@server.nl',
             password: 'secret',
-            phoneNumber: '06-87654321'
+            phoneNumber: '06-87654321',
+            token: null
         }
     ],
     _index: 2,

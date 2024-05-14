@@ -61,7 +61,6 @@ const userService = {
                 logger.info(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             } else {
-                // Assuming meals are stored in a different way, adjust as necessary
                 const meals = database._data.filter(meal => meal.cookId === id && new Date(meal.date) >= new Date());
                 callback(null, {
                     status: 200,
@@ -101,6 +100,16 @@ const userService = {
             callback({ status: 400, message: errMsg }, null);
             return;
         }
+        
+        // Check if the email address already exists for a different user
+        const existingUser = database._data.find(u => u.emailAdress === user.emailAdress && u.id !== id);
+        if (existingUser) {
+            const errMsg = `Email address ${user.emailAdress} already exists.`;
+            logger.error(errMsg);
+            callback({ status: 400, message: errMsg }, null);
+            return;
+        }
+        
         database.update(id, user, (err, data) => {
             if (err) {
                 logger.error('error updating user: ', err.message || 'unknown error');
@@ -127,7 +136,7 @@ const userService = {
             logger.warn('Incorrect password for user:', email);
             callback({ status: 401, message: 'Incorrect password' }, null);
         } else {
-            const token = new Date().getTime().toString();
+            const token = Buffer.from(`${user.id}:${new Date().getTime()}`).toString('base64');
             user.token = token;
             logger.info('Login successful for', email, 'with token', token);
             callback(null, {

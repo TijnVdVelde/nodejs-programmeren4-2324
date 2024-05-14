@@ -1,10 +1,9 @@
 const express = require('express');
+const router = express.Router();
 const assert = require('assert');
 const chai = require('chai');
 chai.should();
-const router = express.Router();
 const userController = require('../controllers/user.controller');
-const logger = require('../util/logger');
 const { authenticateToken } = require('../middleware/auth');
 
 const validateUserCreate = (req, res, next) => {
@@ -57,10 +56,8 @@ const validateUserCreateChaiExpect = (req, res, next) => {
             /^[a-zA-Z]+$/,
             'firstName must be a string'
         );
-        logger.trace('User successfully validated');
         next();
     } catch (ex) {
-        logger.trace('User validation failed:', ex.message);
         next({
             status: 400,
             message: ex.message,
@@ -86,8 +83,8 @@ router.post('/api/login', validateLogin, userController.login);
 router.post('/api/user', validateUserCreateChaiExpect, userController.create);
 router.get('/api/user', userController.getAll);
 router.get('/api/user/:userId', userController.getById);
-router.delete('/api/user/:userId', userController.delete);
-router.put('/api/user/:userId', validateUserCreateChaiExpect, userController.update);
+router.delete('/api/user/:userId', authenticateToken, userController.delete);
+router.put('/api/user/:userId', authenticateToken, validateUserCreateChaiExpect, userController.update);
 router.get('/api/user/profile', authenticateToken, userController.getProfile);
 
 module.exports = router;
