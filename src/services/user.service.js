@@ -5,8 +5,7 @@ const userService = {
     create: (user, callback) => {
         logger.info('create user', user);
         
-        // Check if the email address already exists
-        const existingUser = database._data.find(u => u.emailAdress === user.emailAdress);
+        const existingUser = database._data.users.find(u => u.emailAdress === user.emailAdress);
         if (existingUser) {
             const errMsg = `Email address ${user.emailAdress} already exists.`;
             logger.error(errMsg);
@@ -14,7 +13,7 @@ const userService = {
             return;
         }
         
-        database.add(user, (err, data) => {
+        database.addUser(user, (err, data) => {
             if (err) {
                 logger.info('error creating user: ', err.message || 'unknown error');
                 callback(err, null);
@@ -30,8 +29,8 @@ const userService = {
     },
 
     getAll: (callback) => {
-        logger.info('getAll');
-        database.getAll((err, data) => {
+        logger.info('getAll users');
+        database.getAllUsers((err, data) => {
             if (err) {
                 callback(err, null);
             } else {
@@ -52,7 +51,7 @@ const userService = {
             callback({ status: 400, message: errMsg }, null);
             return;
         }
-        database.getById(id, (err, data) => {
+        database.getUserById(id, (err, data) => {
             if (err) {
                 logger.error('error getting user: ', err.message || 'unknown error');
                 callback(err, null);
@@ -61,7 +60,7 @@ const userService = {
                 logger.info(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             } else {
-                const meals = database._data.filter(meal => meal.cookId === id && new Date(meal.date) >= new Date());
+                const meals = database._data.meals.filter(meal => meal.cook.id === id && new Date(meal.dateTime) >= new Date());
                 callback(null, {
                     status: 200,
                     message: `User found with id ${id}.`,
@@ -79,7 +78,7 @@ const userService = {
             callback({ status: 400, message: errMsg }, null);
             return;
         }
-        database.delete(id, (err, result) => {
+        database.deleteUser(id, (err, result) => {
             if (err) {
                 logger.error('error deleting user: ', err.message || 'unknown error');
                 callback(err, null);
@@ -101,8 +100,7 @@ const userService = {
             return;
         }
         
-        // Check if the email address already exists for a different user
-        const existingUser = database._data.find(u => u.emailAdress === user.emailAdress && u.id !== id);
+        const existingUser = database._data.users.find(u => u.emailAdress === user.emailAdress && u.id !== id);
         if (existingUser) {
             const errMsg = `Email address ${user.emailAdress} already exists.`;
             logger.error(errMsg);
@@ -110,7 +108,7 @@ const userService = {
             return;
         }
         
-        database.update(id, user, (err, data) => {
+        database.updateUser(id, user, (err, data) => {
             if (err) {
                 logger.error('error updating user: ', err.message || 'unknown error');
                 callback(err, null);
@@ -127,7 +125,7 @@ const userService = {
 
     login: (email, password, callback) => {
         logger.info('Attempting login for', email);
-        const user = database._data.find(user => user.emailAdress === email);
+        const user = database._data.users.find(user => user.emailAdress === email);
 
         if (!user) {
             logger.warn('User not found:', email);

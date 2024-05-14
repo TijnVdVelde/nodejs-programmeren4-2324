@@ -24,7 +24,7 @@ let userController = {
     },
 
     getAll: (req, res, next) => {
-        logger.trace('getAll');
+        logger.trace('getAll users');
         userService.getAll((error, success) => {
             if (error) {
                 return next({
@@ -35,7 +35,7 @@ let userController = {
             }
             if (success) {
                 res.status(200).json({
-                    status: 200,
+                    status: success.status,
                     message: success.message,
                     data: success.data
                 });
@@ -106,15 +106,6 @@ let userController = {
                 data: {}
             });
         }
-
-        if (userId !== req.userId) {
-            return next({
-                status: 403,
-                message: "You are not authorized to update this user's data",
-                data: {}
-            });
-        }
-
         const userData = req.body;
         logger.trace('update user', userId);
         userService.update(userId, userData, (error, success) => {

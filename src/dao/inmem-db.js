@@ -1,44 +1,48 @@
 const logger = require('../util/logger');
 
 const database = {
-    _data: [
-        {
-            id: 0,
-            firstName: 'Hendrik',
-            lastName: 'van Dam',
-            street: 'Kerkstraat 1',
-            city: 'Utrecht',
-            isActive: true,
-            emailAdress: 'hvd@server.nl',
-            password: 'secret',
-            phoneNumber: '06-12345678',
-            token: null
-        },
-        {
-            id: 1,
-            firstName: 'Marieke',
-            lastName: 'Jansen',
-            street: 'Schipweg 10',
-            city: 'Amsterdam',
-            isActive: true,
-            emailAdress: 'm@server.nl',
-            password: 'secret',
-            phoneNumber: '06-87654321',
-            token: null
-        }
-    ],
-    _index: 2,
+    _data: {
+        users: [
+            {
+                id: 0,
+                firstName: 'Hendrik',
+                lastName: 'van Dam',
+                street: 'Kerkstraat 1',
+                city: 'Utrecht',
+                isActive: true,
+                emailAdress: 'hvd@server.nl',
+                password: 'secret',
+                phoneNumber: '06-12345678',
+                token: null
+            },
+            {
+                id: 1,
+                firstName: 'Marieke',
+                lastName: 'Jansen',
+                street: 'Schipweg 10',
+                city: 'Amsterdam',
+                isActive: true,
+                emailAdress: 'm@server.nl',
+                password: 'secret',
+                phoneNumber: '06-87654321',
+                token: null
+            }
+        ],
+        meals: []
+    },
+    _userIndex: 2,
+    _mealIndex: 1,
     _delayTime: 500,
 
-    getAll(callback) {
+    getAllUsers(callback) {
         setTimeout(() => {
-            callback(null, this._data);
+            callback(null, this._data.users);
         }, this._delayTime);
     },
 
-    getById(id, callback) {
+    getUserById(id, callback) {
         setTimeout(() => {
-            const item = this._data.find(user => user.id === id);
+            const item = this._data.users.find(user => user.id === id);
             if (item) {
                 callback(null, item);
             } else {
@@ -49,39 +53,53 @@ const database = {
         }, this._delayTime);
     },
 
-    add(item, callback) {
+    addUser(item, callback) {
         setTimeout(() => {
-            item.id = this._index++;
-            this._data.push(item);
+            item.id = this._userIndex++;
+            this._data.users.push(item);
             callback(null, item);
         }, this._delayTime);
     },
 
-    update(id, updatedItem, callback) {
+    updateUser(id, updatedItem, callback) {
         setTimeout(() => {
-            const index = this._data.findIndex(item => item.id === id);
+            const index = this._data.users.findIndex(item => item.id === id);
             if (index === -1) {
                 const errMsg = `Error: id ${id} does not exist!`;
                 logger.error(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             } else {
-                this._data[index] = { ...this._data[index], ...updatedItem };
-                callback(null, this._data[index]);
+                this._data.users[index] = { ...this._data.users[index], ...updatedItem };
+                callback(null, this._data.users[index]);
             }
         }, this._delayTime);
     },
 
-    delete(id, callback) {
+    deleteUser(id, callback) {
         setTimeout(() => {
-            const index = this._data.findIndex(item => item.id === id);
+            const index = this._data.users.findIndex(item => item.id === id);
             if (index === -1) {
                 const errMsg = `Error: id ${id} does not exist!`;
                 logger.error(errMsg);
                 callback({ status: 404, message: errMsg }, null);
             } else {
-                this._data.splice(index, 1);
+                this._data.users.splice(index, 1);
                 callback(null, { message: `User with id ${id} deleted successfully.` });
             }
+        }, this._delayTime);
+    },
+
+    getAllMeals(callback) {
+        setTimeout(() => {
+            callback(null, this._data.meals);
+        }, this._delayTime);
+    },
+
+    addMeal(meal, callback) {
+        setTimeout(() => {
+            meal.id = this._mealIndex++;
+            this._data.meals.push(meal);
+            callback(null, meal);
         }, this._delayTime);
     }
 };

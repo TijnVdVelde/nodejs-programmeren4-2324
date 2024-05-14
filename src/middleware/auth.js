@@ -11,7 +11,7 @@ const authenticateToken = (req, res, next) => {
     }
 
     logger.info(`Token provided: ${token}`);
-    const user = database._data.find(user => user.token === token);
+    const user = database._data.users.find(user => user.token === token);
     if (!user) {
         logger.warn(`Invalid token: ${token}`);
         return res.status(403).json({ status: 403, message: "Forbidden" });
