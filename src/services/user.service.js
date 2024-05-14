@@ -4,15 +4,22 @@ const logger = require('../util/logger');
 const userService = {
     create: (user, callback) => {
         logger.info('create user', user);
-        
+
+        // Check for unique email address
         const existingUser = database._data.users.find(u => u.emailAdress === user.emailAdress);
         if (existingUser) {
-            const errMsg = `Email address ${user.emailAdress} already exists.`;
-            logger.error(errMsg);
-            callback({ status: 400, message: errMsg }, null);
-            return;
+            const errMsg = 'Email address already in use';
+            logger.info(errMsg);
+            return callback({ status: 400, message: errMsg }, null);
         }
-        
+
+        // Validate required fields
+        if (!user.firstName || !user.lastName || !user.emailAdress || !user.password) {
+            const errMsg = 'Missing required fields';
+            logger.info(errMsg);
+            return callback({ status: 400, message: errMsg }, null);
+        }
+
         database.addUser(user, (err, data) => {
             if (err) {
                 logger.info('error creating user: ', err.message || 'unknown error');

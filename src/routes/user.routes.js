@@ -49,7 +49,7 @@ const validateUserCreateChaiShould = (req, res, next) => {
 
 const validateUserCreateChaiExpect = (req, res, next) => {
     try {
-        assert(req.body.firstName, 'Missing or incorrect firstName field');
+        assert(req.body.firstName, 'Missing required fields');
         chai.expect(req.body.firstName).to.not.be.empty;
         chai.expect(req.body.firstName).to.be.a('string');
         chai.expect(req.body.firstName).to.match(
