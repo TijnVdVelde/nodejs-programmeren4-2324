@@ -35,16 +35,28 @@ const userService = {
         });
     },
 
-    getAll: (callback) => {
+    getAll: (criteria, callback) => {
         logger.info('getAll users');
         database.getAllUsers((err, data) => {
             if (err) {
                 callback(err, null);
             } else {
+                let filteredData = data;
+                if (criteria) {
+                    if (criteria.isActive !== undefined) {
+                        filteredData = filteredData.filter(user => user.isActive === (criteria.isActive === 'true'));
+                    }
+                    if (criteria.firstName) {
+                        filteredData = filteredData.filter(user => user.firstName === criteria.firstName);
+                    }
+                    if (criteria.city) {
+                        filteredData = filteredData.filter(user => user.city === criteria.city);
+                    }
+                }
                 callback(null, {
                     status: 200,
-                    message: `Found ${data.length} users.`,
-                    data: data
+                    message: `Found ${filteredData.length} users.`,
+                    data: filteredData
                 });
             }
         });

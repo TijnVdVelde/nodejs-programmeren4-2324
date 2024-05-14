@@ -25,7 +25,8 @@ let userController = {
 
     getAll: (req, res, next) => {
         logger.trace('getAll users');
-        userService.getAll((error, success) => {
+        const criteria = req.query;
+        userService.getAll(criteria, (error, success) => {
             if (error) {
                 return next({
                     status: error.status,
