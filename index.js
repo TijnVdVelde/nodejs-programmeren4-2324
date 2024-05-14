@@ -28,6 +28,11 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
-    logger.info(`Server running on port ${port}`);
-});
+let server;
+if (!module.parent) {
+    server = app.listen(port, () => {
+        logger.info(`Server running on port ${port}`);
+    });
+}
+
+module.exports = { app, server }; // Export the app and server instance
