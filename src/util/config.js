@@ -1,14 +1,18 @@
 require('dotenv').config();
+const { URL } = require('url');
 
-const secretkey = process.env.SECRETKEY || 'DitIsEenGeheim';
+const dbUrl = process.env.DATABASE_URL || 'mysql://root:password@localhost:3307/share_a_meal';
+
+// Parse the database URL
+const parsedDbUrl = new URL(dbUrl);
 
 const config = {
-    secretkey: secretkey,
-    dbHost: process.env.DB_HOST || 'localhost',
-    dbUser: process.env.DB_USER || 'root',
-    dbPassword: process.env.DB_PASSWORD || '',
-    dbPort: process.env.DB_PORT || 3307,
-    dbDatabase: process.env.DB_DATABASE || 'share_a_meal'
+    secretkey: process.env.SECRETKEY || 'DitIsEenGeheim',
+    dbHost: parsedDbUrl.hostname,
+    dbUser: parsedDbUrl.username,
+    dbPassword: parsedDbUrl.password,
+    dbPort: parsedDbUrl.port || 3307,
+    dbDatabase: parsedDbUrl.pathname.replace('/', '')
 };
 
 module.exports = config;
