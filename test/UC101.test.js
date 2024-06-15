@@ -1,12 +1,12 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
-const database = require('../src/dao/inmem-db');
-const { expect } = chai;
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const { app } = require('../index') // Adjust the path to your main application file
+const database = require('../src/dao/mysql-db')
+const { expect } = chai
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let server;
+let server
 
 describe('UC-101 Inloggen', () => {
     before((done) => {
@@ -39,22 +39,22 @@ describe('UC-101 Inloggen', () => {
                 }
             ],
             meals: []
-        };
+        }
 
         // Start the server
         server = app.listen(3000, () => {
-            done();
-        });
-    });
+            done()
+        })
+    })
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (server && server.listening) {
-            server.close(done);
+            server.close(done)
         } else {
-            done();
+            done()
         }
-    });
+    })
 
     it('should login successfully with valid credentials', (done) => {
         chai.request(server)
@@ -64,20 +64,20 @@ describe('UC-101 Inloggen', () => {
                 password: 'secret'
             })
             .end((err, res) => {
-                expect(res).to.have.status(200);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 200);
-                expect(res.body).to.have.property('message', 'Login successful');
-                expect(res.body.data).to.have.property('token');
+                expect(res).to.have.status(200)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 200)
+                expect(res.body).to.have.property('message', 'Login successful')
+                expect(res.body.data).to.have.property('token')
                 expect(res.body.data.user).to.include({
                     id: 0,
                     firstName: 'Hendrik',
                     lastName: 'van Dam',
                     emailAdress: 'hvd@server.nl'
-                });
-                done();
-            });
-    });
+                })
+                done()
+            })
+    })
 
     it('should return an error for missing email or password', (done) => {
         chai.request(server)
@@ -87,13 +87,16 @@ describe('UC-101 Inloggen', () => {
                 password: ''
             })
             .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 400);
-                expect(res.body).to.have.property('message', 'Email and password are required');
-                done();
-            });
-    });
+                expect(res).to.have.status(400)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 400)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Email and password are required'
+                )
+                done()
+            })
+    })
 
     it('should return an error for incorrect password', (done) => {
         chai.request(server)
@@ -103,13 +106,16 @@ describe('UC-101 Inloggen', () => {
                 password: 'wrongpassword'
             })
             .end((err, res) => {
-                expect(res).to.have.status(401);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 401);
-                expect(res.body).to.have.property('message', 'Incorrect password');
-                done();
-            });
-    });
+                expect(res).to.have.status(401)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 401)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Incorrect password'
+                )
+                done()
+            })
+    })
 
     it('should return an error for non-existent user', (done) => {
         chai.request(server)
@@ -119,11 +125,11 @@ describe('UC-101 Inloggen', () => {
                 password: 'secret'
             })
             .end((err, res) => {
-                expect(res).to.have.status(404);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 404);
-                expect(res.body).to.have.property('message', 'User not found');
-                done();
-            });
-    });
-});
+                expect(res).to.have.status(404)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 404)
+                expect(res.body).to.have.property('message', 'User not found')
+                done()
+            })
+    })
+})

@@ -1,14 +1,14 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
-const database = require('../src/dao/inmem-db');
-const { expect } = chai;
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const { app } = require('../index') // Adjust the path to your main application file
+const database = require('../src/dao/mysql-db')
+const { expect } = chai
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let serverInstance;
-let validToken;
-let anotherValidToken;
+let serverInstance
+let validToken
+let anotherValidToken
 
 describe('UC-305 Verwijderen van maaltijd', () => {
     before((done) => {
@@ -50,7 +50,7 @@ describe('UC-305 Verwijderen van maaltijd', () => {
                     cook: { id: 0 }
                 }
             ]
-        };
+        }
 
         // Start the server
         serverInstance = app.listen(3000, () => {
@@ -59,79 +59,91 @@ describe('UC-305 Verwijderen van maaltijd', () => {
                 .post('/api/login')
                 .send({ emailAdress: 'hvd@server.nl', password: 'secret' })
                 .end((err, res) => {
-                    if (err) done(err);
-                    validToken = res.body.data.token;
+                    if (err) done(err)
+                    validToken = res.body.data.token
 
                     chai.request(serverInstance)
                         .post('/api/login')
-                        .send({ emailAdress: 'm@server.nl', password: 'secret' })
+                        .send({
+                            emailAdress: 'm@server.nl',
+                            password: 'secret'
+                        })
                         .end((err, res) => {
-                            if (err) done(err);
-                            anotherValidToken = res.body.data.token;
-                            done();
-                        });
-                });
-        });
-    });
+                            if (err) done(err)
+                            anotherValidToken = res.body.data.token
+                            done()
+                        })
+                })
+        })
+    })
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (serverInstance && serverInstance.listening) {
-            serverInstance.close(done);
+            serverInstance.close(done)
         } else {
-            done();
+            done()
         }
-    });
+    })
 
     it('should delete meal successfully', (done) => {
         chai.request(serverInstance)
             .delete('/api/meal/0')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                expect(res).to.have.status(200);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 200);
-                expect(res.body).to.have.property('message', 'Meal deleted successfully.');
-                done();
-            });
-    });
+                expect(res).to.have.status(200)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 200)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Meal deleted successfully.'
+                )
+                done()
+            })
+    })
 
     it('should return an error if user is not the owner', (done) => {
         chai.request(serverInstance)
             .delete('/api/meal/0')
             .set('Authorization', `Bearer ${anotherValidToken}`)
             .end((err, res) => {
-                expect(res).to.have.status(404);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 404);
-                expect(res.body).to.have.property('message', 'Error: id 0 does not exist!');
-                done();
-            });
-    });
+                expect(res).to.have.status(404)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 404)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Error: id 0 does not exist!'
+                )
+                done()
+            })
+    })
 
     it('should return an error if the meal does not exist', (done) => {
         chai.request(serverInstance)
             .delete('/api/meal/999')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                expect(res).to.have.status(404);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 404);
-                expect(res.body).to.have.property('message', 'Error: id 999 does not exist!');
-                done();
-            });
-    });
+                expect(res).to.have.status(404)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 404)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Error: id 999 does not exist!'
+                )
+                done()
+            })
+    })
 
     it('should return an error for invalid token', (done) => {
         chai.request(serverInstance)
             .delete('/api/meal/0')
             .set('Authorization', 'Bearer invalidToken')
             .end((err, res) => {
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'Forbidden');
-                done();
-            });
-    });
-});
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property('message', 'Forbidden')
+                done()
+            })
+    })
+})

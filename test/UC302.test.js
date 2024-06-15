@@ -1,14 +1,14 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
-const database = require('../src/dao/inmem-db');
-const { expect } = chai;
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const { app } = require('../index') // Adjust the path to your main application file
+const database = require('../src/dao/mysql-db')
+const { expect } = chai
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let server;
-let validToken;
-let anotherValidToken;
+let server
+let validToken
+let anotherValidToken
 
 describe('UC-302 Wijzigen van maaltijdgegevens', () => {
     before((done) => {
@@ -50,7 +50,7 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                     cook: { id: 0 }
                 }
             ]
-        };
+        }
 
         // Start the server
         server = app.listen(3000, () => {
@@ -59,29 +59,32 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 .post('/api/login')
                 .send({ emailAdress: 'hvd@server.nl', password: 'secret' })
                 .end((err, res) => {
-                    if (err) done(err);
-                    validToken = res.body.data.token;
+                    if (err) done(err)
+                    validToken = res.body.data.token
 
                     chai.request(server)
                         .post('/api/login')
-                        .send({ emailAdress: 'm@server.nl', password: 'secret' })
+                        .send({
+                            emailAdress: 'm@server.nl',
+                            password: 'secret'
+                        })
                         .end((err, res) => {
-                            if (err) done(err);
-                            anotherValidToken = res.body.data.token;
-                            done();
-                        });
-                });
-        });
-    });
+                            if (err) done(err)
+                            anotherValidToken = res.body.data.token
+                            done()
+                        })
+                })
+        })
+    })
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (server && server.listening) {
-            server.close(done);
+            server.close(done)
         } else {
-            done();
+            done()
         }
-    });
+    })
 
     it.skip('should update meal details successfully', (done) => {
         chai.request(server)
@@ -94,16 +97,22 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 price: 12
             })
             .end((err, res) => {
-                expect(res).to.have.status(200);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 200);
-                expect(res.body.data).to.have.property('name', 'Updated Pasta');
-                expect(res.body.data).to.have.property('description', 'Updated description');
-                expect(res.body.data).to.have.property('dateTime', '2024-05-16T18:00:00Z');
-                expect(res.body.data).to.have.property('price', 12);
-                done();
-            });
-    });
+                expect(res).to.have.status(200)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 200)
+                expect(res.body.data).to.have.property('name', 'Updated Pasta')
+                expect(res.body.data).to.have.property(
+                    'description',
+                    'Updated description'
+                )
+                expect(res.body.data).to.have.property(
+                    'dateTime',
+                    '2024-05-16T18:00:00Z'
+                )
+                expect(res.body.data).to.have.property('price', 12)
+                done()
+            })
+    })
 
     it('should return an error for invalid token', (done) => {
         chai.request(server)
@@ -116,13 +125,13 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 price: 12
             })
             .end((err, res) => {
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'Forbidden');
-                done();
-            });
-    });
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property('message', 'Forbidden')
+                done()
+            })
+    })
 
     it.skip('should return an error if the meal does not exist', (done) => {
         chai.request(server)
@@ -135,13 +144,16 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 price: 12
             })
             .end((err, res) => {
-                expect(res).to.have.status(404);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 404);
-                expect(res.body).to.have.property('message', 'Meal not found with id 999');
-                done();
-            });
-    });
+                expect(res).to.have.status(404)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 404)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Meal not found with id 999'
+                )
+                done()
+            })
+    })
 
     it('should return an error if user is not the owner', (done) => {
         chai.request(server)
@@ -154,13 +166,16 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 price: 12
             })
             .end((err, res) => {
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'User not authorized to update meal with id 0');
-                done();
-            });
-    });
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property(
+                    'message',
+                    'User not authorized to update meal with id 0'
+                )
+                done()
+            })
+    })
 
     it.skip('should return an error for missing required fields', (done) => {
         chai.request(server)
@@ -173,11 +188,14 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
                 price: ''
             })
             .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 400);
-                expect(res.body).to.have.property('message', 'Missing required fields');
-                done();
-            });
-    });
-});
+                expect(res).to.have.status(400)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 400)
+                expect(res.body).to.have.property(
+                    'message',
+                    'Missing required fields'
+                )
+                done()
+            })
+    })
+})

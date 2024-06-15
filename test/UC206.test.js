@@ -1,13 +1,13 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
-const database = require('../src/dao/inmem-db');
-const { expect } = chai;
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const { app } = require('../index') // Adjust the path to your main application file
+const database = require('../src/dao/mysql-db')
+const { expect } = chai
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let server;
-let validToken;
+let server
+let validToken
 
 describe('UC-206 Verwijderen van user', () => {
     before((done) => {
@@ -40,7 +40,7 @@ describe('UC-206 Verwijderen van user', () => {
                 }
             ],
             meals: []
-        };
+        }
 
         // Start the server
         server = app.listen(3000, () => {
@@ -49,75 +49,80 @@ describe('UC-206 Verwijderen van user', () => {
                 .post('/api/login')
                 .send({ emailAdress: 'hvd@server.nl', password: 'secret' })
                 .end((err, res) => {
-                    if (err) done(err);
-                    validToken = res.body.data.token;
-                    done();
-                });
-        });
-    });
+                    if (err) done(err)
+                    validToken = res.body.data.token
+                    done()
+                })
+        })
+    })
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (server && server.listening) {
-            server.close(done);
+            server.close(done)
         } else {
-            done();
+            done()
         }
-    });
+    })
 
     it('should delete user successfully', (done) => {
         chai.request(server)
             .delete('/api/user/0')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                console.log('Delete user response:', res.body);
-                expect(res).to.have.status(200);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 200);
-                expect(res.body).to.have.property('message').that.includes('User with id 0 deleted successfully.');
-                done();
-            });
-    });
+                console.log('Delete user response:', res.body)
+                expect(res).to.have.status(200)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 200)
+                expect(res.body)
+                    .to.have.property('message')
+                    .that.includes('User with id 0 deleted successfully.')
+                done()
+            })
+    })
 
     it('should return an error if user is not the owner', (done) => {
         chai.request(server)
             .delete('/api/user/1')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                console.log('Error if user is not the owner response:', res.body);
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'Forbidden');
-                done();
-            });
-    });
+                console.log(
+                    'Error if user is not the owner response:',
+                    res.body
+                )
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property('message', 'Forbidden')
+                done()
+            })
+    })
 
     it('should return an error if the user does not exist', (done) => {
         chai.request(server)
             .delete('/api/user/999')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                console.log('Error if user does not exist response:', res.body);
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'Forbidden');
-                done();
-            });
-    });
+                console.log('Error if user does not exist response:', res.body)
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property('message', 'Forbidden')
+                done()
+            })
+    })
 
     it('should return an error for invalid token', (done) => {
         chai.request(server)
             .delete('/api/user/0')
             .set('Authorization', 'Bearer invalidToken')
             .end((err, res) => {
-                console.log('Error for invalid token response:', res.body);
-                expect(res).to.have.status(403);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 403);
-                expect(res.body).to.have.property('message', 'Forbidden');
-                done();
-            });
-    });
-});
+                console.log('Error for invalid token response:', res.body)
+                expect(res).to.have.status(403)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 403)
+                expect(res.body).to.have.property('message', 'Forbidden')
+                done()
+            })
+    })
+})
