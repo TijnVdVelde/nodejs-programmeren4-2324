@@ -99,10 +99,6 @@ const userService = {
             }
 
             const user = data[0];
-            const [futureMeals] = await database.query(
-                'SELECT * FROM meals WHERE cookId = ? AND dateTime >= NOW()',
-                [id]
-            );
 
             callback(null, {
                 status: 200,
@@ -240,7 +236,7 @@ const userService = {
 
             const user = userResult[0];
             const [futureMeals] = await database.query(
-                'SELECT * FROM meals WHERE cookId = ? AND dateTime >= NOW()',
+                'SELECT * FROM meals WHERE userId = ? AND dateTime >= NOW()',
                 [userId]
             );
 

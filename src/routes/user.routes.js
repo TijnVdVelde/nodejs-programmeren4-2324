@@ -6,6 +6,7 @@ chai.should();
 const userController = require('../controllers/user.controller');
 const { authenticateToken } = require('../middleware/auth');
 
+// Validation middleware for user creation
 const validateUserCreateChaiExpect = (req, res, next) => {
     try {
         assert(req.body.firstName, 'Missing required fields');
@@ -25,6 +26,7 @@ const validateUserCreateChaiExpect = (req, res, next) => {
     }
 };
 
+// Validation middleware for login
 const validateLogin = (req, res, next) => {
     const { emailAdress, password } = req.body;
     if (!emailAdress || !password) {
@@ -38,6 +40,7 @@ const validateLogin = (req, res, next) => {
     }
 };
 
+// Routes
 router.post('/api/login', validateLogin, userController.login);
 router.post('/api/user', validateUserCreateChaiExpect, userController.create);
 router.get('/api/user', authenticateToken, userController.getAll);
