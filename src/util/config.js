@@ -1,14 +1,12 @@
-//
-// Application configuration
-//
-const secretkey = process.env.SECRETKEY || 'DitIsEenGeheim'
+const secretkey = process.env.SECRETKEY || 'DitIsEenGeheim';
 
 const config = {
     secretkey: secretkey,
-
     dbHost: 'localhost',
-    dbUser: 'app_user',
-    dbDatabase: 'database_name'
-}
+    dbUser: 'root',
+    dbPassword: '',
+    dbPort: 3307,
+    dbDatabase: 'share_a_meal'
+};
 
-module.exports = config
+module.exports = config;
