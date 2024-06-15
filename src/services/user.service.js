@@ -89,16 +89,20 @@ const userService = {
         }
 
         try {
-            const [data] = await database.query('SELECT * FROM users WHERE id = ?', [id]);
+            const [userResult] = await database.query('SELECT * FROM users WHERE id = ?', [id]);
 
-            if (data.length === 0) {
+            if (userResult.length === 0) {
                 const errMsg = `User not found with id ${id}`;
                 logger.info(errMsg);
                 callback({ status: 404, message: errMsg }, null);
                 return;
             }
 
-            const user = data[0];
+            const user = userResult[0];
+            const [futureMeals] = await database.query(
+                'SELECT * FROM meals WHERE userId = ? AND dateTime >= NOW()',
+                [id]
+            );
 
             callback(null, {
                 status: 200,
