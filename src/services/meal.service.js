@@ -40,7 +40,7 @@ const mealService = {
             });
         } catch (err) {
             logger.error('Error creating meal: ', err.message || 'unknown error');
-            callback(err, null);
+            callback({ status: 500, message: 'Internal Server Error' }, null);
         }
     },
 
@@ -55,7 +55,7 @@ const mealService = {
             });
         } catch (err) {
             logger.error('Error fetching meals: ', err.message || 'unknown error');
-            callback(err, null);
+            callback({ status: 500, message: 'Internal Server Error' }, null);
         }
     },
 
@@ -76,12 +76,19 @@ const mealService = {
             }
         } catch (err) {
             logger.error('Error fetching meal: ', err.message || 'unknown error');
-            callback(err, null);
+            callback({ status: 500, message: 'Internal Server Error' }, null);
         }
     },
 
     update: async (id, meal, userId, callback) => {
         logger.info(`update meal with id ${id}`, meal);
+
+        // Validate required fields
+        if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
+            const errMsg = 'Missing required fields';
+            logger.info(errMsg);
+            return callback({ status: 400, message: errMsg }, null);
+        }
 
         try {
             const [existingMealResult] = await pool.query('SELECT * FROM meals WHERE id = ?', [id]);
@@ -118,7 +125,7 @@ const mealService = {
             });
         } catch (err) {
             logger.error('Error updating meal: ', err.message || 'unknown error');
-            callback(err, null);
+            callback({ status: 500, message: 'Internal Server Error' }, null);
         }
     },
 
@@ -151,7 +158,7 @@ const mealService = {
             });
         } catch (err) {
             logger.error('Error deleting meal: ', err.message || 'unknown error');
-            callback(err, null);
+            callback({ status: 500, message: 'Internal Server Error' }, null);
         }
     }
 };
