@@ -60,6 +60,27 @@ async function resetDatabase() {
             [dummyDetails.firstName, dummyDetails.lastName, dummyDetails.street, dummyDetails.city, dummyDetails.isActive, dummyEmail, dummyPassword, dummyDetails.phoneNumber, dummyDetails.token]
         );
 
+        // Insert a meal
+        const mealDetails = {
+            name: 'Sushi Platter',
+            description: 'A delicious assortment of fresh sushi',
+            isActive: true,
+            isVega: false,
+            isVegan: false,
+            isToTakeHome: true,
+            dateTime: '2024-06-01T18:00:00',
+            imageUrl: 'https://example.com/sushi.jpg',
+            allergens: JSON.stringify(['fish', 'soy']),
+            maxAmountOfParticipants: 15,
+            price: 25.0,
+            userId: 1 // Assuming the dummy user id is 1
+        };
+
+        await connection.query(
+            `INSERT INTO meals (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, allergens, maxParticipants, price, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [mealDetails.name, mealDetails.description, mealDetails.isActive, mealDetails.isVega, mealDetails.isVegan, mealDetails.isToTakeHome, mealDetails.dateTime, mealDetails.imageUrl, mealDetails.allergens, mealDetails.maxAmountOfParticipants, mealDetails.price, mealDetails.userId]
+        );
+
         await connection.commit();
         logger.info('Database reset successfully');
     } catch (err) {

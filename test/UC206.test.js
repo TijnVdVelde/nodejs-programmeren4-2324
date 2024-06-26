@@ -16,6 +16,12 @@ describe('UC-206 Verwijderen van user', () => {
 
         // Reset the database
         await resetDatabase();
+
+        // Log in to get a valid token
+        const res = await chai.request(server)
+            .post('/api/login')
+            .send({ emailAdress: 'tmh.vandevelde@student.avans.nl', password: 'secret' });
+        validToken = res.body.data.token;
     });
 
     after((done) => {
@@ -40,16 +46,18 @@ describe('UC-206 Verwijderen van user', () => {
 
     it('should delete user successfully', (done) => {
         chai.request(server)
-            .delete('/api/user/1')
+            .delete('/api/user/2')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                console.log('Delete user response:', res.body);
+                if (err) {
+                    console.error('Error details:', err);
+                }
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an('object');
                 expect(res.body).to.have.property('status', 200);
                 expect(res.body)
                     .to.have.property('message')
-                    .that.includes('User with id 1 successfully deleted.');
+                    .that.includes('User with id 2 successfully deleted.');
                 done();
             });
     });
@@ -59,7 +67,9 @@ describe('UC-206 Verwijderen van user', () => {
             .delete('/api/user/999')
             .set('Authorization', `Bearer ${validToken}`)
             .end((err, res) => {
-                console.log('Error if user does not exist response:', res.body);
+                if (err) {
+                    console.error('Error details:', err);
+                }
                 expect(res).to.have.status(404);
                 expect(res.body).to.be.an('object');
                 expect(res.body).to.have.property('status', 404);
@@ -70,10 +80,12 @@ describe('UC-206 Verwijderen van user', () => {
 
     it('should return an error for invalid token', (done) => {
         chai.request(server)
-            .delete('/api/user/0')
+            .delete('/api/user/2')
             .set('Authorization', 'Bearer invalidToken')
             .end((err, res) => {
-                console.log('Error for invalid token response:', res.body);
+                if (err) {
+                    console.error('Error details:', err);
+                }
                 expect(res).to.have.status(403);
                 expect(res.body).to.be.an('object');
                 expect(res.body).to.have.property('status', 403);
