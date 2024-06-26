@@ -1,10 +1,12 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const database = require('../dao/mysql-db');
-const logger = require('../util/logger');
-const config = require('../util/config');
+const bcrypt = require('bcrypt'); // Importeer de bcrypt module om wachtwoorden te hashen.
+const jwt = require('jsonwebtoken'); // Importeer de jsonwebtoken module om JWT's te genereren en te verifiëren.
+const database = require('../dao/mysql-db'); // Importeer de database module voor database interacties.
+const logger = require('../util/logger'); // Importeer de logger module voor het loggen van informatie en fouten.
+const config = require('../util/config'); // Importeer de configuratie-instellingen.
 
+// Het userService object met methoden voor het aanmaken, ophalen, bijwerken en verwijderen van gebruikers.
 const userService = {
+    // Methode om een nieuwe gebruiker aan te maken.
     create: async (user, callback) => {
         logger.info('create user', user);
 
@@ -45,6 +47,7 @@ const userService = {
         }
     },
 
+    // Methode om alle gebruikers op te halen.
     getAll: async (criteria, callback) => {
         logger.info('getAll users');
         try {
@@ -79,6 +82,7 @@ const userService = {
         }
     },
 
+    // Methode om een gebruiker op te halen op basis van ID.
     getById: async (id, callback) => {
         logger.info(`getById with id ${id}`);
         if (isNaN(id)) {
@@ -115,6 +119,7 @@ const userService = {
         }
     },
 
+    // Methode om een gebruiker te verwijderen op basis van ID.
     delete: async (id, callback) => {
         logger.info(`delete user with id ${id}`);
         if (isNaN(id)) {
@@ -144,6 +149,7 @@ const userService = {
         }
     },
 
+    // Methode om een bestaande gebruiker bij te werken.
     update: async (userId, updatedData, callback) => {
         try {
             const [userResult] = await database.query('SELECT * FROM users WHERE id = ?', [userId]);
@@ -185,6 +191,7 @@ const userService = {
         }
     },
 
+    // Methode om een gebruiker in te loggen.
     login: async (email, password, callback) => {
         logger.info('Attempting login for', email);
 
@@ -228,6 +235,7 @@ const userService = {
         }
     },
 
+    // Methode om het profiel van een gebruiker op te halen.
     getProfile: async (userId, callback) => {
         logger.info(`getProfile for user with id ${userId}`);
 
@@ -259,4 +267,4 @@ const userService = {
     }
 };
 
-module.exports = userService;
+module.exports = userService; // Exporteer het userService object zodat deze gebruikt kan worden in andere delen van de applicatie.

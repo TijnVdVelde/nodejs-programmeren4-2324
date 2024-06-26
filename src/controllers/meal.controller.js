@@ -2,6 +2,7 @@ const mealService = require('../services/meal.service');
 const logger = require('../util/logger');
 
 let mealController = {
+    // Beschrijving: Deze functie maakt een nieuwe maaltijd aan.
     create: (req, res, next) => {
         const meal = req.body;
         const userId = req.userId;
@@ -25,6 +26,7 @@ let mealController = {
         });
     },
 
+    // Beschrijving: Deze functie haalt alle maaltijden op.
     getAll: (req, res, next) => {
         logger.info('get all meals');
         mealService.getAll((error, success) => {
@@ -45,6 +47,7 @@ let mealController = {
         });
     },
 
+    // Beschrijving: Deze functie haalt een maaltijd op basis van ID.
     getById: (req, res, next) => {
         const mealId = parseInt(req.params.mealId, 10);
 
@@ -76,6 +79,7 @@ let mealController = {
         });
     },
 
+    // Beschrijving: Deze functie werkt een bestaande maaltijd bij.
     update: (req, res, next) => {
         const mealId = parseInt(req.params.mealId, 10);
         const userId = req.userId;
@@ -109,6 +113,7 @@ let mealController = {
         });
     },
 
+    // Beschrijving: Deze functie verwijdert een maaltijd op basis van ID.
     delete: (req, res, next) => {
         const mealId = parseInt(req.params.mealId, 10);
         const userId = req.userId;

@@ -1,30 +1,33 @@
-const mysql = require('mysql2/promise');
-const config = require('../util/config');
-const logger = require('../util/logger');
+const mysql = require('mysql2/promise'); // Importeer de mysql2/promise module om gebruik te maken van MySQL met async/await.
+const config = require('../util/config'); // Importeer de configuratie-instellingen.
+const logger = require('../util/logger'); // Importeer de logger module voor het loggen van informatie en fouten.
 
+// Maak een verbindingspool aan met de opgegeven configuratie-instellingen.
 const pool = mysql.createPool({
-    host: config.dbHost,
-    user: config.dbUser,
-    password: config.dbPassword,
-    port: config.dbPort,
-    database: config.dbDatabase,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    host: config.dbHost, // De hostnaam van de database.
+    user: config.dbUser, // De gebruikersnaam voor de database.
+    password: config.dbPassword, // Het wachtwoord voor de databasegebruiker.
+    port: config.dbPort, // De poort waarop de database draait.
+    database: config.dbDatabase, // De naam van de database.
+    waitForConnections: true, // Wacht op beschikbare verbindingen wanneer de limiet is bereikt.
+    connectionLimit: 10, // Het maximale aantal verbindingen in de pool.
+    queueLimit: 0 // De maximale lengte van de wachtrij voor verbindingen. 0 betekent onbeperkt.
 });
 
+// De mealService object met methoden voor het aanmaken, ophalen, bijwerken en verwijderen van maaltijden.
 const mealService = {
+    // Methode om een nieuwe maaltijd aan te maken.
     create: async (meal, userId, callback) => {
         logger.info('create meal', meal);
 
-        // Validate required fields
+        // Valideer verplichte velden
         if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
             const errMsg = 'Missing required fields';
             logger.info(errMsg);
             return callback({ status: 400, message: errMsg }, null);
         }
 
-        // Assign the logged-in user as the owner of the meal
+        // Wijs de ingelogde gebruiker toe als de eigenaar van de maaltijd
         meal.cook = { id: userId };
 
         try {
@@ -44,6 +47,7 @@ const mealService = {
         }
     },
 
+    // Methode om alle maaltijden op te halen.
     getAll: async (callback) => {
         logger.info('get all meals');
         try {
@@ -59,6 +63,7 @@ const mealService = {
         }
     },
 
+    // Methode om een maaltijd op te halen op basis van ID.
     getById: async (id, callback) => {
         logger.info(`get meal by id ${id}`);
         try {
@@ -80,10 +85,11 @@ const mealService = {
         }
     },
 
+    // Methode om een bestaande maaltijd bij te werken.
     update: async (id, meal, userId, callback) => {
         logger.info(`update meal with id ${id}`, meal);
 
-        // Validate required fields
+        // Valideer verplichte velden
         if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
             const errMsg = 'Missing required fields';
             logger.info(errMsg);
@@ -106,7 +112,7 @@ const mealService = {
                 return callback({ status: 403, message: errMsg }, null);
             }
 
-            // Merge existing meal data with the new data
+            // Voeg bestaande maaltijdgegevens samen met de nieuwe gegevens
             const updatedMeal = {
                 ...existingMeal,
                 ...meal
@@ -129,6 +135,7 @@ const mealService = {
         }
     },
 
+    // Methode om een maaltijd te verwijderen op basis van ID.
     delete: async (id, userId, callback) => {
         logger.info(`delete meal with id ${id}`);
 
@@ -163,4 +170,4 @@ const mealService = {
     }
 };
 
-module.exports = mealService;
+module.exports = mealService; // Exporteer het mealService object zodat deze gebruikt kan worden in andere delen van de applicatie.

@@ -2,6 +2,7 @@ const userService = require('../services/user.service');
 const logger = require('../util/logger');
 
 let userController = {
+    // Beschrijving: Deze functie maakt een nieuwe gebruiker aan.
     create: (req, res, next) => {
         const user = req.body;
         logger.info('create user', user.firstName, user.lastName);
@@ -23,6 +24,7 @@ let userController = {
         });
     },
 
+    // Beschrijving: Deze functie haalt alle gebruikers op.
     getAll: (req, res, next) => {
         logger.trace('getAll users');
         const criteria = req.query;
@@ -44,8 +46,9 @@ let userController = {
         });
     },
 
+    // Beschrijving: Deze functie haalt een gebruiker op basis van ID.
     getById: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10); // Convert the userId from string to integer
+        const userId = parseInt(req.params.userId, 10); // Converteert de userId van string naar integer
         if (isNaN(userId)) {
             return next({
                 status: 400,
@@ -72,6 +75,7 @@ let userController = {
         });
     },
     
+    // Beschrijving: Deze functie verwijdert een gebruiker op basis van ID.
     delete: (req, res, next) => {
         const userId = parseInt(req.params.userId, 10);
         if (isNaN(userId)) {
@@ -98,12 +102,13 @@ let userController = {
         });
     },
 
+    // Beschrijving: Deze functie werkt een bestaande gebruiker bij.
     update: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10); // Fix parameter name to match the route
+        const userId = parseInt(req.params.userId, 10); // Converteert de userId van string naar integer
         const updatedData = req.body;
         const tokenUserId = req.userId;
 
-        // Check if user exists
+        // Controleert of de gebruiker bestaat
         userService.getById(userId, (err, result) => {
             if (err) {
                 return next({
@@ -113,7 +118,7 @@ let userController = {
                 });
             }
 
-            // Check if the user making the request is the owner of the data
+            // Controleert of de gebruiker die het verzoek doet de eigenaar is van de gegevens
             if (userId !== tokenUserId) {
                 return res.status(403).json({
                     status: 403,
@@ -141,6 +146,7 @@ let userController = {
         });
     },
 
+    // Beschrijving: Deze functie logt een gebruiker in.
     login: (req, res, next) => {
         const { emailAdress, password } = req.body;
         logger.info('Login attempt by', emailAdress);
@@ -163,8 +169,9 @@ let userController = {
         });
     },
 
+    // Beschrijving: Deze functie haalt het profiel van een gebruiker op basis van de ingelogde gebruiker-ID.
     getProfile: (req, res, next) => {
-        const userId = req.userId; // This is set by the authentication middleware
+        const userId = req.userId; // Dit is ingesteld door de authenticatiemiddleware
         logger.info(`Fetching profile for user ID: ${userId}`);
         if (!userId || isNaN(userId)) {
             return next({

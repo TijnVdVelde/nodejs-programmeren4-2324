@@ -1,30 +1,30 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
-const { resetDatabase } = require('../src/util/reset-db.js');
-const { expect } = chai;
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const { app } = require('../index')
+const { resetDatabase } = require('../src/util/reset-db.js')
+const { expect } = chai
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let server;
+let server
 
 describe('UC-201 Registreren als nieuwe user', () => {
     before(async () => {
         // Start the server
-        server = app.listen(3000);
+        server = app.listen(3000)
 
         // Reset the database and keep the admin account
-        await resetDatabase();
-    });
+        await resetDatabase()
+    })
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (server && server.listening) {
-            server.close(done);
+            server.close(done)
         } else {
-            done();
+            done()
         }
-    });
+    })
 
     it('should register a new user successfully', (done) => {
         chai.request(server)
@@ -41,16 +41,16 @@ describe('UC-201 Registreren als nieuwe user', () => {
             })
             .end((err, res) => {
                 if (err) {
-                    console.error('Error details:', err);
-                    console.error('Response body:', res.body);
-                    done(err);
+                    console.error('Error details:', err)
+                    console.error('Response body:', res.body)
+                    done(err)
                 } else {
-                    expect(res).to.have.status(200);
-                    expect(res.body).to.be.an('object');
-                    expect(res.body).to.have.property('status', 200);
+                    expect(res).to.have.status(200)
+                    expect(res.body).to.be.an('object')
+                    expect(res.body).to.have.property('status', 200)
                     expect(res.body)
                         .to.have.property('message')
-                        .that.includes('User created with id');
+                        .that.includes('User created with id')
                     expect(res.body.data).to.include({
                         firstName: 'Tijn',
                         lastName: 'From the Fields',
@@ -58,11 +58,11 @@ describe('UC-201 Registreren als nieuwe user', () => {
                         city: 'London',
                         emailAdress: 'tmh.fromthefields@student.avans.nl',
                         phoneNumber: '0612312345'
-                    });
-                    done();
+                    })
+                    done()
                 }
-            });
-    });
+            })
+    })
 
     it('should return an error for missing required fields', (done) => {
         chai.request(server)
@@ -76,19 +76,19 @@ describe('UC-201 Registreren als nieuwe user', () => {
             })
             .end((err, res) => {
                 if (err) {
-                    console.error('Error details:', err);
-                    console.error('Response body:', res.body);
+                    console.error('Error details:', err)
+                    console.error('Response body:', res.body)
                 }
-                expect(res).to.have.status(400);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 400);
+                expect(res).to.have.status(400)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 400)
                 expect(res.body).to.have.property(
                     'message',
                     'Missing required fields'
-                );
-                done();
-            });
-    });
+                )
+                done()
+            })
+    })
 
     it('should return an error for non-unique email address', (done) => {
         chai.request(server)
@@ -105,17 +105,17 @@ describe('UC-201 Registreren als nieuwe user', () => {
             })
             .end((err, res) => {
                 if (err) {
-                    console.error('Error details:', err);
-                    console.error('Response body:', res.body);
+                    console.error('Error details:', err)
+                    console.error('Response body:', res.body)
                 }
-                expect(res).to.have.status(400);
-                expect(res.body).to.be.an('object');
-                expect(res.body).to.have.property('status', 400);
+                expect(res).to.have.status(400)
+                expect(res.body).to.be.an('object')
+                expect(res.body).to.have.property('status', 400)
                 expect(res.body).to.have.property(
                     'message',
                     'Email address already in use'
-                );
-                done();
-            });
-    });
-});
+                )
+                done()
+            })
+    })
+})

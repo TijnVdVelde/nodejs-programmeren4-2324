@@ -1,8 +1,9 @@
-const mysql = require('mysql2/promise');
-const config = require('./config');
-const logger = require('./logger');
+const mysql = require('mysql2/promise'); // Importeer de mysql2/promise module om gebruik te maken van MySQL met async/await.
+const config = require('./config'); // Importeer de configuratie-instellingen.
+const logger = require('./logger'); // Importeer de logger module voor het loggen van informatie en fouten.
 
 async function resetDatabase() {
+    // Maak een verbinding met de database met behulp van de configuratie-instellingen.
     const connection = await mysql.createConnection({
         host: config.dbHost,
         user: config.dbUser,
@@ -12,21 +13,21 @@ async function resetDatabase() {
     });
 
     try {
-        await connection.beginTransaction();
+        await connection.beginTransaction(); // Begin een nieuwe transactie.
 
-        // Disable foreign key checks
+        // Schakel de controle op buitenlandse sleutels uit.
         await connection.query('SET FOREIGN_KEY_CHECKS = 0');
 
-        // Truncate the tables
+        // Leeg de tabellen door ze te trunceren.
         await connection.query('TRUNCATE TABLE meals');
         await connection.query('TRUNCATE TABLE users');
 
-        // Re-enable foreign key checks
+        // Schakel de controle op buitenlandse sleutels weer in.
         await connection.query('SET FOREIGN_KEY_CHECKS = 1');
 
-        // Insert the admin account details
+        // Voeg de admin account gegevens in.
         const adminEmail = 'tmh.vandevelde@student.avans.nl';
-        const adminPassword = '$2b$10$Or1NY6Jz7mC9XPzORshlsuHDuVHpu78GafUBRlEm3zr1dsb/TNOly'; // Hashed password
+        const adminPassword = '$2b$10$Or1NY6Jz7mC9XPzORshlsuHDuVHpu78GafUBRlEm3zr1dsb/TNOly'; // Gehashed wachtwoord
         const adminDetails = {
             firstName: 'Tijn',
             lastName: 'Van de Velde',
@@ -42,9 +43,9 @@ async function resetDatabase() {
             [adminDetails.firstName, adminDetails.lastName, adminDetails.street, adminDetails.city, adminDetails.isActive, adminEmail, adminPassword, adminDetails.phoneNumber, adminDetails.token]
         );
 
-        // Insert a dummy user account
+        // Voeg een dummy gebruiker account in.
         const dummyEmail = 'name@email.com';
-        const dummyPassword = '$2b$10$Or1NY6Jz7mC9XPzORshlsuHDuVHpu78GafUBRlEm3zr1dsb/TNOly'; // Hashed password
+        const dummyPassword = '$2b$10$Or1NY6Jz7mC9XPzORshlsuHDuVHpu78GafUBRlEm3zr1dsb/TNOly'; // Gehashed wachtwoord
         const dummyDetails = {
             firstName: 'Voornaam',
             lastName: 'Achternaam',
@@ -60,7 +61,7 @@ async function resetDatabase() {
             [dummyDetails.firstName, dummyDetails.lastName, dummyDetails.street, dummyDetails.city, dummyDetails.isActive, dummyEmail, dummyPassword, dummyDetails.phoneNumber, dummyDetails.token]
         );
 
-        // Insert a meal
+        // Voeg een maaltijd in.
         const mealDetails = {
             name: 'Sushi Platter',
             description: 'A delicious assortment of fresh sushi',
@@ -73,7 +74,7 @@ async function resetDatabase() {
             allergens: JSON.stringify(['fish', 'soy']),
             maxAmountOfParticipants: 15,
             price: 25.0,
-            userId: 1 // Assuming the dummy user id is 1
+            userId: 1 // Veronderstel dat de dummy gebruiker id 1 is.
         };
 
         await connection.query(
@@ -81,15 +82,15 @@ async function resetDatabase() {
             [mealDetails.name, mealDetails.description, mealDetails.isActive, mealDetails.isVega, mealDetails.isVegan, mealDetails.isToTakeHome, mealDetails.dateTime, mealDetails.imageUrl, mealDetails.allergens, mealDetails.maxAmountOfParticipants, mealDetails.price, mealDetails.userId]
         );
 
-        await connection.commit();
-        logger.info('Database reset successfully');
+        await connection.commit(); // Commit de transactie.
+        logger.info('Database reset successfully'); // Log een bericht dat de database succesvol is gereset.
     } catch (err) {
-        await connection.rollback();
-        logger.error('Error resetting database:', err);
-        throw err;
+        await connection.rollback(); // Rol de transactie terug in geval van een fout.
+        logger.error('Error resetting database:', err); // Log de fout.
+        throw err; // Gooi de fout opnieuw op.
     } finally {
-        await connection.end();
+        await connection.end(); // Sluit de databaseverbinding.
     }
 }
 
-module.exports = { resetDatabase };
+module.exports = { resetDatabase }; // Exporteer de resetDatabase functie zodat deze gebruikt kan worden in andere delen van de applicatie.

@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const { app } = require('../index'); // Adjust the path to your main application file
+const { app } = require('../index');
 const { resetDatabase } = require('../src/util/reset-db.js');
 const { expect } = chai;
 
