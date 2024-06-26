@@ -1,152 +1,87 @@
-// Deze test wordt overgeslagen.
-// De code is niet helemaal correct, maar de test is wel goed geschreven.
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const { app } = require('../index'); // Adjust the path to your main application file
+const { resetDatabase } = require('../src/util/reset-db.js');
+const { expect } = chai;
 
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const { app } = require('../index') // Adjust the path to your main application file
-const database = require('../src/dao/mysql-db')
-const { expect } = chai
+chai.use(chaiHttp);
 
-chai.use(chaiHttp)
-
-let server
-let token
+let server;
+let token;
 
 describe('UC-203 Opvragen van gebruikersprofiel', () => {
-    before((done) => {
-        // Reset the database to its initial state before starting the tests
-        database._data = {
-            users: [
-                {
-                    id: 0,
-                    firstName: 'Hendrik',
-                    lastName: 'van Dam',
-                    street: 'Kerkstraat 1',
-                    city: 'Utrecht',
-                    isActive: true,
-                    emailAdress: 'hvd@server.nl',
-                    password: 'secret',
-                    phoneNumber: '06-12345678',
-                    token: 'token1'
-                },
-                {
-                    id: 1,
-                    firstName: 'Marieke',
-                    lastName: 'Jansen',
-                    street: 'Schipweg 10',
-                    city: 'Amsterdam',
-                    isActive: true,
-                    emailAdress: 'm@server.nl',
-                    password: 'secret',
-                    phoneNumber: '06-87654321',
-                    token: 'token2'
-                }
-            ],
-            meals: [
-                {
-                    id: 0,
-                    name: 'Pasta Carbonara',
-                    description: 'Spaghetti with pancetta, eggs, and cheese',
-                    isActive: true,
-                    isVega: false,
-                    isVegan: false,
-                    isToTakeHome: false,
-                    dateTime: '2024-06-01T18:00:00',
-                    maxAmountOfParticipants: 5,
-                    price: 10.5,
-                    imageUrl: 'https://www.simplyrecipes.com/thmb/1',
-                    allergens: ['gluten', 'lactose'],
-                    cook: {
-                        id: 0
-                    },
-                    participants: [
-                        {
-                            id: 1
-                        }
-                    ]
-                }
-            ]
-        }
-
+    before(async () => {
         // Start the server
-        server = app.listen(3000, () => {
-            done()
-        })
-    })
+        server = app.listen(3000);
+
+        // Reset the database
+        await resetDatabase();
+    });
 
     after((done) => {
         // Stop the server after all tests if it's running
         if (server && server.listening) {
-            server.close(done)
+            server.close(done);
         } else {
-            done()
+            done();
         }
-    })
+    });
 
-    beforeEach((done) => {
+    beforeEach(async () => {
+        // Reset the database to its initial state before each test
+        await resetDatabase();
+
         // Log in to get a token
-        chai.request(server)
+        const res = await chai.request(server)
             .post('/api/login')
-            .send({ emailAdress: 'hvd@server.nl', password: 'secret' })
-            .end((err, res) => {
-                if (err) {
-                    done(err)
-                } else {
-                    token = res.body.data.token
-                    done()
-                }
-            })
-    })
+            .send({ emailAdress: 'tmh.vandevelde@student.avans.nl', password: 'secret' });
+        token = res.body.data.token;
+    });
 
-    it.skip('should retrieve the user profile successfully', (done) => {
+    it('should retrieve the user profile successfully', (done) => {
         chai.request(server)
             .get('/api/user/profile')
             .set('Authorization', `Bearer ${token}`)
             .end((err, res) => {
-                expect(res).to.have.status(200)
-                expect(res.body).to.be.an('object')
-                expect(res.body).to.have.property('status', 200)
-                expect(res.body).to.have.property(
-                    'message',
-                    'Profile retrieved successfully.'
-                )
-                expect(res.body.data).to.have.property('user')
-                expect(res.body.data.user).to.include({
-                    id: 0,
-                    firstName: 'Hendrik',
-                    lastName: 'van Dam',
-                    emailAdress: 'hvd@server.nl'
-                })
-                expect(res.body.data)
-                    .to.have.property('meals')
-                    .that.is.an('array')
-                expect(res.body.data.meals).to.have.lengthOf(1)
-                done()
-            })
-    })
+                if (err) {
+                    done(err);
+                } else {
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.an('object');
+                    expect(res.body).to.have.property('status', 200);
+                    expect(res.body).to.have.property('message', 'Profile retrieved successfully.');
+                    expect(res.body.data).to.have.property('user');
+                    expect(res.body.data.user).to.include({
+                        emailAdress: 'tmh.vandevelde@student.avans.nl'
+                    });
+                    expect(res.body.data).to.have.property('meals').that.is.an('array');
+                    done();
+                }
+            });
+    });
 
-    it.skip('should return an error for missing token', (done) => {
+    it('should return an error for missing token', (done) => {
         chai.request(server)
             .get('/api/user/profile')
             .end((err, res) => {
-                expect(res).to.have.status(401)
-                expect(res.body).to.be.an('object')
-                expect(res.body).to.have.property('status', 401)
-                expect(res.body).to.have.property('message', 'Unauthorized')
-                done()
-            })
-    })
+                expect(res).to.have.status(401);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('status', 401);
+                expect(res.body).to.have.property('message', 'Unauthorized');
+                done();
+            });
+    });
 
-    it.skip('should return an error for invalid token', (done) => {
+    it('should return an error for invalid token', (done) => {
         chai.request(server)
             .get('/api/user/profile')
             .set('Authorization', 'Bearer invalidtoken')
             .end((err, res) => {
-                expect(res).to.have.status(403)
-                expect(res.body).to.be.an('object')
-                expect(res.body).to.have.property('status', 403)
-                expect(res.body).to.have.property('message', 'Forbidden')
-                done()
-            })
-    })
-})
+                expect(res).to.have.status(403);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('status', 403);
+                expect(res.body).to.have.property('message', 'Forbidden');
+                done();
+            });
+    });
+});
