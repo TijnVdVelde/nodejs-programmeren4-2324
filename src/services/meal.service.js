@@ -89,6 +89,9 @@ const mealService = {
     update: async (id, meal, userId, callback) => {
         logger.info(`update meal with id ${id}`, meal);
 
+        // Log de binnenkomende gegevens voor debugdoeleinden
+        logger.debug(`Incoming meal data: ${JSON.stringify(meal)}`);
+
         // Valideer verplichte velden
         if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
             const errMsg = 'Missing required fields';
