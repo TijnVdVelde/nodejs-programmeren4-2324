@@ -76,8 +76,9 @@ jobs:
               run: |
                   sudo apt-get update
                   sudo apt-get install -y mysql-client
-                  mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} < share-a-meal.create.sql
-                  mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} share_a_meal < share-a-meal.sql
+                  mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};"
+                  mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} ${{ env.DB_DATABASE }} < share-a-meal.create.sql
+                  mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} ${{ env.DB_DATABASE }} < share-a-meal.sql
 
             - name: Run tests
               run: |
