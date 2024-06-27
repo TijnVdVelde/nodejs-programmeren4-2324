@@ -70,7 +70,7 @@ const mealService = {
             const [results] = await pool.query('SELECT * FROM meal')
             callback(null, {
                 status: 200,
-                message: `Found ${results.length} meal.`,
+                message: `Found ${results.length} meals.`,
                 data: results
             })
         } catch (err) {
@@ -112,13 +112,8 @@ const mealService = {
 
     // Methode om een bestaande maaltijd bij te werken.
     update: async (id, meal, userId, callback) => {
-        // Log de update actie
         logger.info(`update meal with id ${id}`, meal)
 
-        // Log de binnenkomende gegevens voor debugdoeleinden
-        logger.debug(`Incoming meal data: ${JSON.stringify(meal)}`)
-
-        // Controleer of er update gegevens zijn verstrekt
         if (Object.keys(meal).length === 0) {
             const errMsg = 'No data provided for update'
             logger.info(errMsg)
@@ -126,28 +121,24 @@ const mealService = {
         }
 
         try {
-            // Zoek de bestaande maaltijd in de database
             const [existingMealResult] = await pool.query(
                 'SELECT * FROM meal WHERE id = ?',
                 [id]
             )
             const existingMeal = existingMealResult[0]
 
-            // Controleer of de maaltijd bestaat
             if (!existingMeal) {
                 const errMsg = `Meal not found with id ${id}`
                 logger.info(errMsg)
                 return callback({ status: 404, message: errMsg }, null)
             }
 
-            // Controleer of de gebruiker gemachtigd is om de maaltijd bij te werken
             if (existingMeal.userId !== userId) {
                 const errMsg = `User not authorized to update meal with id ${id}`
                 logger.info(errMsg)
                 return callback({ status: 403, message: errMsg }, null)
             }
 
-            // Valideer verplichte velden alleen als ze zijn opgegeven
             const requiredFields = ['name', 'description', 'dateTime', 'price']
             for (const field of requiredFields) {
                 if (meal.hasOwnProperty(field) && !meal[field]) {
@@ -157,7 +148,6 @@ const mealService = {
                 }
             }
 
-            // Bouw de query dynamisch op basis van de opgegeven velden
             const updateFields = []
             const updateValues = []
 
@@ -174,24 +164,20 @@ const mealService = {
 
             await pool.query(updateQuery, updateValues)
 
-            // Log de succesvolle update
             logger.trace(`Meal updated with id ${id}.`)
 
-            // Haal de bijgewerkte maaltijdgegevens op om terug te sturen in de response
             const [updatedMealResult] = await pool.query(
                 'SELECT * FROM meal WHERE id = ?',
                 [id]
             )
             const updatedMeal = updatedMealResult[0]
 
-            // Retourneer de response met de bijgewerkte maaltijdgegevens
             callback(null, {
                 status: 200,
                 message: `Meal updated successfully.`,
                 data: updatedMeal
             })
         } catch (err) {
-            // Log de fout en retourneer een interne serverfout
             logger.error(
                 'Error updating meal: ',
                 err.message || 'unknown error'

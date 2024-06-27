@@ -92,7 +92,7 @@ const userService = {
 
             callback(null, {
                 status: 200,
-                message: `Found ${filteredData.length} user.`,
+                message: `Found ${filteredData.length} users.`,
                 data: filteredData
             })
         } catch (err) {
