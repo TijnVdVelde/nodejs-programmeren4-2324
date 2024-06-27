@@ -90,7 +90,7 @@ async function resetDatabase() {
             isToTakeHome: true,
             dateTime: '2024-06-01T18:00:00',
             imageUrl: 'https://example.com/sushi.jpg',
-            allergenes: JSON.stringify(['fish', 'soy']),
+            allergenes: 'gluten,lactose', // Using valid values from the SET type
             maxAmountOfParticipants: 15,
             price: 25.0,
             userId: 1 // Assume the dummy user has ID 1.
