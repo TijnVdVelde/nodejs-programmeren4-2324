@@ -34,7 +34,7 @@ const mealService = {
                     meal.isToTakeHome,
                     meal.dateTime,
                     meal.imageUrl,
-                    JSON.stringify(meal.allergens),
+                    meal.allergenes.join(','),
                     meal.maxAmountOfParticipants,
                     meal.price,
                     userId
@@ -54,6 +54,7 @@ const mealService = {
             callback({ status: 500, message: 'Internal Server Error' }, null)
         }
     },
+
     getAll: async (callback) => {
         logger.info('get all meal')
         try {
@@ -100,8 +101,8 @@ const mealService = {
     update: async (id, meal, userId, callback) => {
         logger.info(`update meal with id ${id}`, meal)
         logger.debug(`Incoming meal data: ${JSON.stringify(meal)}`)
-        if (Object.keys(meal).length === 0) {
-            const errMsg = 'No data provided for update'
+        if (!meal.name || !meal.description || !meal.dateTime || !meal.price) {
+            const errMsg = 'Missing required fields'
             logger.info(errMsg)
             return callback({ status: 400, message: errMsg }, null)
         }
@@ -120,14 +121,6 @@ const mealService = {
                 const errMsg = `User not authorized to update meal with id ${id}`
                 logger.info(errMsg)
                 return callback({ status: 403, message: errMsg }, null)
-            }
-            const requiredFields = ['name', 'description', 'dateTime', 'price']
-            for (const field of requiredFields) {
-                if (meal.hasOwnProperty(field) && !meal[field]) {
-                    const errMsg = `Missing value for required field: ${field}`
-                    logger.info(errMsg)
-                    return callback({ status: 400, message: errMsg }, null)
-                }
             }
             const updateFields = []
             const updateValues = []
