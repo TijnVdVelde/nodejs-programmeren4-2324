@@ -78,7 +78,7 @@ jobs:
                   mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} ${{ env.DB_DATABASE }} < share-a-meal.sql
 
             - name: Install Mocha
-              run: npm install mocha --save-dev
+              run: npm install mocha
 
             - name: Run tests
               run: |
