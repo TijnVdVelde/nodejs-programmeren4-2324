@@ -12,22 +12,13 @@ let anotherValidToken
 
 describe('UC-302 Wijzigen van maaltijdgegevens', () => {
     before(async () => {
-        // Start the server
         server = app.listen(3000)
-
-        // Reset the database
         await resetDatabase()
-
-        // Login to get valid tokens for both users
-        const res1 = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res1 = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         validToken = res1.body.data.token
-
         const res2 = await chai
             .request(server)
             .post('/api/login')
@@ -36,7 +27,6 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
     })
 
     after((done) => {
-        // Stop the server after all tests if it's running
         if (server && server.listening) {
             server.close(done)
         } else {
@@ -45,19 +35,12 @@ describe('UC-302 Wijzigen van maaltijdgegevens', () => {
     })
 
     beforeEach(async () => {
-        // Reset the database to its initial state before each test
         await resetDatabase()
-
-        // Log in to get valid tokens for both users
-        const res1 = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res1 = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         validToken = res1.body.data.token
-
         const res2 = await chai
             .request(server)
             .post('/api/login')

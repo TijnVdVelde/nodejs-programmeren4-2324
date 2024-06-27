@@ -2,7 +2,6 @@ const userService = require('../services/user.service');
 const logger = require('../util/logger');
 
 let userController = {
-    // Beschrijving: Deze functie maakt een nieuwe gebruiker aan.
     create: (req, res, next) => {
         const user = req.body;
         logger.info('create user', user.firstName, user.lastName);
@@ -24,7 +23,6 @@ let userController = {
         });
     },
 
-    // Beschrijving: Deze functie haalt alle gebruikers op.
     getAll: (req, res, next) => {
         logger.trace('getAll users');
         const criteria = req.query;
@@ -46,9 +44,8 @@ let userController = {
         });
     },
 
-    // Beschrijving: Deze functie haalt een gebruiker op basis van ID.
     getById: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10); // Converteert de userId van string naar integer
+        const userId = parseInt(req.params.userId, 10); 
         if (isNaN(userId)) {
             return next({
                 status: 400,
@@ -75,7 +72,6 @@ let userController = {
         });
     },
     
-    // Beschrijving: Deze functie verwijdert een gebruiker op basis van ID.
     delete: (req, res, next) => {
         const userId = parseInt(req.params.userId, 10);
         if (isNaN(userId)) {
@@ -102,13 +98,11 @@ let userController = {
         });
     },
 
-    // Beschrijving: Deze functie werkt een bestaande gebruiker bij.
     update: (req, res, next) => {
-        const userId = parseInt(req.params.userId, 10); // Converteert de userId van string naar integer
+        const userId = parseInt(req.params.userId, 10); 
         const updatedData = req.body;
         const tokenUserId = req.userId;
 
-        // Controleert of de gebruiker bestaat
         userService.getById(userId, (err, result) => {
             if (err) {
                 return next({
@@ -118,7 +112,6 @@ let userController = {
                 });
             }
 
-            // Controleert of de gebruiker die het verzoek doet de eigenaar is van de gegevens
             if (userId !== tokenUserId) {
                 return res.status(403).json({
                     status: 403,
@@ -146,32 +139,44 @@ let userController = {
         });
     },
 
-    // Beschrijving: Deze functie logt een gebruiker in.
     login: (req, res, next) => {
         const { emailAdress, password } = req.body;
         logger.info('Login attempt by', emailAdress);
     
         userService.login(emailAdress, password, (error, success) => {
             if (error) {
-                return next({
-                    status: error.status || 500,
-                    message: error.message,
-                    data: {}
-                });
+                if (error.message === 'Incorrect password') {
+                    return res.status(401).json({
+                        status: 401,
+                        message: 'Incorrect password',
+                        data: {}
+                    });
+                } else if (error.message === 'User not found') {
+                    return res.status(404).json({
+                        status: 404,
+                        message: 'User not found',
+                        data: {}
+                    });
+                } else {
+                    return res.status(error.status || 500).json({
+                        status: error.status || 500,
+                        message: error.message,
+                        data: {}
+                    });
+                }
             }
             if (success) {
                 res.status(200).json({
                     status: 200,
-                    message: success.message,
+                    message: 'Login successful',
                     data: success.data
                 });
             }
         });
     },
 
-    // Beschrijving: Deze functie haalt het profiel van een gebruiker op basis van de ingelogde gebruiker-ID.
     getProfile: (req, res, next) => {
-        const userId = req.userId; // Dit is ingesteld door de authenticatiemiddleware
+        const userId = req.userId; 
         logger.info(`Fetching profile for user ID: ${userId}`);
         if (!userId || isNaN(userId)) {
             return next({

@@ -11,25 +11,16 @@ let validToken
 
 describe('UC-301 Toevoegen van maaltijden', () => {
     before(async () => {
-        // Start the server
         server = app.listen(3000)
-
-        // Reset the database
         await resetDatabase()
-
-        // Log in to get a valid token
-        const res = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         validToken = res.body.data.token
     })
 
     after((done) => {
-        // Stop the server after all tests if it's running
         if (server && server.listening) {
             server.close(done)
         } else {
@@ -38,17 +29,11 @@ describe('UC-301 Toevoegen van maaltijden', () => {
     })
 
     beforeEach(async () => {
-        // Reset the database to its initial state before each test
         await resetDatabase()
-
-        // Log in to get a valid token
-        const res = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         validToken = res.body.data.token
     })
 

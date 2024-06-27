@@ -11,15 +11,11 @@ let validToken
 
 describe('UC-205 Updaten van usergegevens', () => {
     before(async () => {
-        // Start the server
         server = app.listen(3000)
-
-        // Reset the database
         await resetDatabase()
     })
 
     after((done) => {
-        // Stop the server after all tests if it's running
         if (server && server.listening) {
             server.close(done)
         } else {
@@ -28,23 +24,17 @@ describe('UC-205 Updaten van usergegevens', () => {
     })
 
     beforeEach(async () => {
-        // Reset the database to its initial state before each test
         await resetDatabase()
-
-        // Login to get a valid token
-        const res = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         validToken = res.body.data.token
     })
 
     it('should update user details successfully', (done) => {
         chai.request(server)
-            .put('/api/user/1') // Update the user with ID 1
+            .put('/api/user/1')
             .set('Authorization', `Bearer ${validToken}`)
             .send({
                 firstName: 'Updated',
@@ -77,9 +67,10 @@ describe('UC-205 Updaten van usergegevens', () => {
                 expect(res).to.have.status(403)
                 expect(res.body).to.be.an('object')
                 expect(res.body).to.have.property('status', 403)
-                expect(res.body)
-                    .to.have.property('message')
-                    .that.includes('You are not authorized to update this user')
+                expect(res.body).to.have.property(
+                    'message',
+                    'You are not authorized to update this user'
+                )
                 done()
             })
     })

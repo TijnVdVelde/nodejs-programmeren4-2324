@@ -11,15 +11,11 @@ let token
 
 describe('UC-204 Opvragen van usergegevens bij ID', () => {
     before(async () => {
-        // Start the server
         server = app.listen(3000)
-
-        // Reset the database
         await resetDatabase()
     })
 
     after((done) => {
-        // Stop the server after all tests if it's running
         if (server && server.listening) {
             server.close(done)
         } else {
@@ -28,10 +24,7 @@ describe('UC-204 Opvragen van usergegevens bij ID', () => {
     })
 
     beforeEach(async () => {
-        // Reset the database to its initial state before each test
         await resetDatabase()
-
-        // Log in to get a token
         const res = await chai.request(server).post('/api/login').send({
             emailAdress: 'tmh.vandevelde@student.avans.nl',
             password: 'secret'
