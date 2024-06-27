@@ -32,13 +32,10 @@ describe('UC-204 Opvragen van usergegevens bij ID', () => {
         await resetDatabase()
 
         // Log in to get a token
-        const res = await chai
-            .request(server)
-            .post('/api/login')
-            .send({
-                emailAdress: 'tmh.vandevelde@student.avans.nl',
-                password: 'secret'
-            })
+        const res = await chai.request(server).post('/api/login').send({
+            emailAdress: 'tmh.vandevelde@student.avans.nl',
+            password: 'secret'
+        })
         token = res.body.data.token
     })
 
@@ -65,7 +62,7 @@ describe('UC-204 Opvragen van usergegevens bij ID', () => {
                         emailAdress: 'tmh.vandevelde@student.avans.nl'
                     })
                     expect(res.body.data)
-                        .to.have.property('meals')
+                        .to.have.property('meal')
                         .that.is.an('array')
                     done()
                 }

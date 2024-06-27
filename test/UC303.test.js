@@ -31,14 +31,14 @@ describe('UC-303 Opvragen van alle maaltijden', () => {
         await resetDatabase()
     })
 
-    it('should retrieve all meals successfully', (done) => {
+    it('should retrieve all meal successfully', (done) => {
         chai.request(server)
             .get('/api/meal')
             .end((err, res) => {
                 expect(res).to.have.status(200)
                 expect(res.body).to.be.an('object')
                 expect(res.body).to.have.property('status', 200)
-                expect(res.body).to.have.property('message', 'Found 1 meals.')
+                expect(res.body).to.have.property('message', 'Found 1 meal.')
                 expect(res.body.data).to.be.an('array')
                 expect(res.body.data).to.have.length.above(0)
                 done()

@@ -100,7 +100,7 @@ describe('UC-202 Opvragen overzicht van users', () => {
                 expect(res.body).to.have.property('status', 200)
                 expect(res.body)
                     .to.have.property('message')
-                    .that.includes('Found 1 users.')
+                    .that.includes('Found 1 user.')
                 expect(res.body.data).to.be.an('array')
                 expect(res.body.data).to.have.lengthOf(1)
                 expect(res.body.data[0]).to.include({
@@ -121,7 +121,7 @@ describe('UC-202 Opvragen overzicht van users', () => {
                 expect(res.body).to.have.property('status', 200)
                 expect(res.body)
                     .to.have.property('message')
-                    .that.includes('Found 0 users.')
+                    .that.includes('Found 0 user.')
                 expect(res.body.data).to.be.an('array')
                 expect(res.body.data).to.have.lengthOf(0)
                 done()
