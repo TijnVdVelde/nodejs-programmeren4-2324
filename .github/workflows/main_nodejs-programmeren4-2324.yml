@@ -21,6 +21,11 @@ jobs:
             - name: Clean npm cache
               run: npm cache clean --force
 
+            - name: Remove node_modules and package-lock.json
+              run: |
+                  rm -rf node_modules
+                  rm -f package-lock.json
+
             - name: Install dependencies
               run: npm install
 
@@ -79,6 +84,13 @@ jobs:
                   mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};"
                   mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} ${{ env.DB_DATABASE }} < share-a-meal.create.sql
                   mysql -h 127.0.0.1 -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} ${{ env.DB_DATABASE }} < share-a-meal.sql
+
+            - name: Clean npm cache and reinstall dependencies
+              run: |
+                  npm cache clean --force
+                  rm -rf node_modules
+                  rm -f package-lock.json
+                  npm install
 
             - name: Install Mocha
               run: npm install mocha --save-dev
