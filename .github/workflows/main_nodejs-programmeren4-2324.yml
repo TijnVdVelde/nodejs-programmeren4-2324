@@ -100,7 +100,7 @@ jobs:
 
             - name: Run tests
               run: |
-                  npx mocha --timeout 5000 --DB_PASSWORD=${{ env.MYSQL_ROOT_PASSWORD }} --DB_USER=${{ env.DB_USER }} --DB_NAME=${{ env.DB_DATABASE }} --DB_PORT=${{ env.DB_PORT }}
+                  npx mocha --timeout 5000 --DB_PASSWORD=${{ env.DB_PASSWORD }} --DB_USER=${{ env.DB_USER }} --DB_NAME=${{ env.DB_DATABASE }} --DB_PORT=${{ env.DB_PORT }}
 
     deploy:
         runs-on: ubuntu-latest
