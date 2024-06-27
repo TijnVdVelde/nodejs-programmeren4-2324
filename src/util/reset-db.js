@@ -90,14 +90,14 @@ async function resetDatabase() {
             isToTakeHome: true,
             dateTime: '2024-06-01T18:00:00',
             imageUrl: 'https://example.com/sushi.jpg',
-            allergens: JSON.stringify(['fish', 'soy']),
+            allergenes: JSON.stringify(['fish', 'soy']),
             maxAmountOfParticipants: 15,
             price: 25.0,
             userId: 1 // Assume the dummy user has ID 1.
         }
 
         await connection.query(
-            `INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, allergens, maxAmountOfParticipants, price, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, allergenes, maxAmountOfParticipants, price, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 mealDetails.name,
                 mealDetails.description,
@@ -107,7 +107,7 @@ async function resetDatabase() {
                 mealDetails.isToTakeHome,
                 mealDetails.dateTime,
                 mealDetails.imageUrl,
-                mealDetails.allergens,
+                mealDetails.allergenes,
                 mealDetails.maxAmountOfParticipants,
                 mealDetails.price,
                 mealDetails.userId
