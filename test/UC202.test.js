@@ -47,7 +47,7 @@ describe('UC-202 Opvragen overzicht van users', () => {
                 expect(res).to.have.status(200)
                 expect(res.body).to.be.an('object')
                 expect(res.body).to.have.property('status', 200)
-                expect(res.body).to.have.property('message', 'Found 1 user.')
+                expect(res.body).to.have.property('message', 'Found 1 users.')
                 expect(res.body.data).to.be.an('array').that.has.lengthOf(1)
                 done()
             })
@@ -61,7 +61,7 @@ describe('UC-202 Opvragen overzicht van users', () => {
                 expect(res).to.have.status(200)
                 expect(res.body).to.be.an('object')
                 expect(res.body).to.have.property('status', 200)
-                expect(res.body).to.have.property('message', 'Found 0 user.')
+                expect(res.body).to.have.property('message', 'Found 0 users.')
                 expect(res.body.data).to.be.an('array').that.is.empty
                 done()
             })
