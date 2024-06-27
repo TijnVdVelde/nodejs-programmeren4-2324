@@ -23,6 +23,7 @@ const mealService = {
         }
         meal.cookId = userId
         try {
+            const allergenes = meal.allergenes ? meal.allergenes.join(',') : ''
             const [result] = await pool.query(
                 'INSERT INTO meal (name, description, isActive, isVega, isVegan, isToTakeHome, dateTime, imageUrl, allergenes, maxAmountOfParticipants, price, cookId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
@@ -34,7 +35,7 @@ const mealService = {
                     meal.isToTakeHome,
                     meal.dateTime,
                     meal.imageUrl,
-                    meal.allergenes.join(','),
+                    allergenes,
                     meal.maxAmountOfParticipants,
                     meal.price,
                     userId
