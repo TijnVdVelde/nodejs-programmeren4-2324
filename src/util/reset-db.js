@@ -36,12 +36,11 @@ async function resetDatabase() {
             street: 'Lovensdijkstraat 61',
             city: 'Breda',
             isActive: 1,
-            phoneNumber: '06 12312345',
-            token: null
+            phoneNumber: '06 12312345'
         }
 
         await connection.query(
-            `INSERT INTO user (firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO user (firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 adminDetails.firstName,
                 adminDetails.lastName,
@@ -50,8 +49,7 @@ async function resetDatabase() {
                 adminDetails.isActive,
                 adminEmail,
                 adminPassword,
-                adminDetails.phoneNumber,
-                adminDetails.token
+                adminDetails.phoneNumber
             ]
         )
 
@@ -65,12 +63,11 @@ async function resetDatabase() {
             street: 'Straat 123',
             city: 'Stad',
             isActive: 1,
-            phoneNumber: '0000000000',
-            token: null
+            phoneNumber: '0000000000'
         }
 
         await connection.query(
-            `INSERT INTO user (firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO user (firstName, lastName, street, city, isActive, emailAdress, password, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 dummyDetails.firstName,
                 dummyDetails.lastName,
@@ -79,8 +76,7 @@ async function resetDatabase() {
                 dummyDetails.isActive,
                 dummyEmail,
                 dummyPassword,
-                dummyDetails.phoneNumber,
-                dummyDetails.token
+                dummyDetails.phoneNumber
             ]
         )
 
